@@ -36,20 +36,35 @@ def getCurrentBlock():
     stdout = p.communicate()[0]
     return stdout.decode("utf-8").strip()
 
-def getBlockData(blockNum):
+def getBlockExtraData(blockNum):
     blockString = str(blockNum)
     p = subprocess.Popen("\""+defaultWalletPath+"walton.exe\" attach http://127.0.0.1:8545 --exec eth.getBlock("+blockString+").extraData", shell=True, stdout=subprocess.PIPE)
     p.wait()
     stdout = p.communicate()[0]
     return stdout.decode("utf-8").strip()
 
+def getBlockMiner(blockNum):
+        blockString = str(blockNum)
+        p = subprocess.Popen("\""+defaultWalletPath+"walton.exe\" attach http://127.0.0.1:8545 --exec eth.getBlock("+blockString+").miner", shell=True, stdout=subprocess.PIPE)
+        p.wait()
+        stdout = p.communicate()[0]
+        return stdout.decode("utf-8").strip()
+
 def logData(blockNum):
-    blockExtraData = getBlockData(blockNum);
+    blockExtraData = getBlockExtraData(blockNum);
+    blockMiner = getBlockMiner(blockNum);
     blockString = str(blockNum)
     dataLog = open("blockDataLog.csv","a");
-    dataLog.write(blockString+","+blockExtraData+"\n");
+    dataLog.write(blockString+","+blockExtraData+","+blockMiner+"\n");
     dataLog.close();
     return
+
+def getMinedBlocksByAddress(etherbase):
+        theReturn;
+        for line in open("blockDataLog.csv"):
+                csv_row = line.split() #returns a list ["1","50","60"]
+                theReturn.append(csv_row[0])
+
 
 ## CONFIG MENU FUNCTIONS
 
@@ -58,29 +73,38 @@ def menu_exit(config):
 	return config, True
 
 def main(argv):
-	## General variables
-	delay = 60
-	## blockNum is the working block - reps the last recorded data
-	blockNum = 0;
-	## actually getting the block num .... gotta test the printout later to grab just the block.
-	last_line = file("blockDataLog.csv", "r").readlines()[-1]
-	## PUT STUFF HERE TO GET JUST THE BLOCK
-	
-	currentBlock = 0;
-	ctypes.windll.user32.MessageBoxW(0, "Initialized", "Your title", 1)
-	currentBlock = getCurrentBlock();
-	currentBlockInt = int(currentBlock)
-	
-	while True:
-		currentBlockInt = int(currentBlock)
-		if (int(currentBlock) > blockNum):
-			while (blockNum < currentBlockInt):
-				logData(blockNum);
-				blockNum=blockNum+1;
-                
-        time.sleep(delay)
+        ## General variables
+        delay = 60
+        ## blockNum is the working block - reps the last recorded data
+        workingBlock = 0;
+        ## actually getting the block num .... gotta test the printout later to grab just the block.
+        if os.path.isfile("blockDataLog.csv"):
+                last_line = open("blockDataLog.csv", "r").readlines()[-1]
+                ctypes.windll.user32.MessageBoxW(0, last_line, "Your title", 1)
+                firstLast, secondLast = last_line.split(',', 1)
+                ctypes.windll.user32.MessageBoxW(0, firstLast, "Your title", 1)
+                ctypes.windll.user32.MessageBoxW(0, secondLast, "Your title", 1)
+                ## PUT STUFF HERE TO GET JUST THE BLOCK
+                workingBlock = workingBlock + (int(firstLast)+1);
+        ctypes.windll.user32.MessageBoxW(0, "Working Block: ", "Your title", 1)
+        ctypes.windll.user32.MessageBoxW(0, str(workingBlock), "Your title", 1)
+        currentBlock = getCurrentBlock();
+        currentBlockInt = int(currentBlock)
         
-    return
-			
+        while True:
+                currentBlockInt = int(currentBlock)
+                if (int(currentBlock) > workingBlock):
+                        while (workingBlock < currentBlockInt):
+                                logData(workingBlock);
+                                workingBlock=workingBlock+1;
+                pause(delay)
+
+                blocksByMiner = getMinedBlocksByAddress(0x197b391d4a7b4306f709177da18ed12a0ac0eaa3)
+               
+                ctypes.windll.user32.MessageBoxW(0, blocksByMiner, "Your title", 1)
+        
+
+                
+        return;
 if __name__ == '__main__':
 	sys.exit(main(sys.argv))
