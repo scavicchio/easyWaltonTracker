@@ -6,6 +6,7 @@ import sys
 import subprocess
 import argparse
 import ctypes   
+import csv
 
 ## Global variables
 versionStr = "v1.0"
@@ -58,21 +59,24 @@ def menu_exit(config):
 
 def main(argv):
 	## General variables
-    delay = 60
-    blockNum = 36998;
-    currentBlock = 0;
-    every100Blocks = 0;
-    ctypes.windll.user32.MessageBoxW(0, "2", "Your title", 1)
-    currentBlock = getCurrentBlock();
-    currentBlockInt = int(currentBlock)
-
-    while True:
-        
-        if (int(currentBlock) > blockNum):
-            while (blockNum < currentBlockInt):
-                logData(blockNum);
-                blockNum=blockNum+1;
-                every100Blocks=every100Blocks+1;
+	delay = 60
+	## blockNum is the working block - reps the last recorded data
+	blockNum = 0;
+	## actually getting the block num .... gotta test the printout later to grab just the block.
+	last_line = file("blockDataLog.csv", "r").readlines()[-1]
+	## PUT STUFF HERE TO GET JUST THE BLOCK
+	
+	currentBlock = 0;
+	ctypes.windll.user32.MessageBoxW(0, "Initialized", "Your title", 1)
+	currentBlock = getCurrentBlock();
+	currentBlockInt = int(currentBlock)
+	
+	while True:
+		currentBlockInt = int(currentBlock)
+		if (int(currentBlock) > blockNum):
+			while (blockNum < currentBlockInt):
+				logData(blockNum);
+				blockNum=blockNum+1;
                 
         time.sleep(delay)
         
