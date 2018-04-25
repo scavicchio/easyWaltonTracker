@@ -7,6 +7,8 @@ import subprocess
 import argparse
 import ctypes   
 import csv
+from flask import Flask, render_template, request, session, url_for, redirect
+import pymysql.cursors
 
 ## Global variables
 versionStr = "v1.0"
@@ -98,7 +100,7 @@ def getMinedBlocksByAddress(etherbase):
                         theReturn.append(blockInt)
                         
         return theReturn
-
+	
 ## CONFIG MENU FUNCTIONS
 
 ''' Config menu option to tell the menu loop to break. '''
