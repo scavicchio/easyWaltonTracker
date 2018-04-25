@@ -59,12 +59,45 @@ def logData(blockNum):
     dataLog.close();
     return
 
-def getMinedBlocksByAddress(etherbase):
-        theReturn;
-        for line in open("blockDataLog.csv"):
-                csv_row = line.split() #returns a list ["1","50","60"]
-                theReturn.append(csv_row[0])
+def getLineOfBlock(block):
+        file = open("blockDataLog.csv","r")
+        csv_f = csv.reader(file)
+        rowCount = 0;
+        for row in csv_f:
+                blockR = row[0]
+                if (blockR == str(block)):
+                        return rowCount
+                rowCount = rowCount + 1;
+        print("block not found")
+        return
+        
+def getMinerByBlock(block):
+        row = getLineOfBlock(block);
+        line = open("blockDataLog.csv","r").readlines()[row]
+        block, extra, miner = line.split(',',2)
+        return miner
 
+def getExtraDataByBlock(block):
+        row = getLineOfBlock(block);
+        line = open("blockDataLog.csv","r").readlines()[row]
+        block, extra, miner = line.split(',',2)
+        return extra
+        
+def getMinedBlocksByAddress(etherbase):
+        theReturn = [];
+
+        file = open("blockDataLog.csv","r")
+        csv_f = csv.reader(file)
+
+        for row in csv_f:
+                block = row[0]
+                extra = row[1]
+                miner = row[2]
+                if (miner == etherbase):
+                        blockInt = int(block)
+                        theReturn.append(blockInt)
+                        
+        return theReturn
 
 ## CONFIG MENU FUNCTIONS
 
@@ -75,19 +108,25 @@ def menu_exit(config):
 def main(argv):
         ## General variables
         delay = 60
+        etherbase = "0x197b391d4a7b4306f709177da18ed12a0ac0eaa3"
         ## blockNum is the working block - reps the last recorded data
         workingBlock = 0;
         ## actually getting the block num .... gotta test the printout later to grab just the block.
         if os.path.isfile("blockDataLog.csv"):
+                print("opening existing database")
                 last_line = open("blockDataLog.csv", "r").readlines()[-1]
-                ctypes.windll.user32.MessageBoxW(0, last_line, "Your title", 1)
+                #ctypes.windll.user32.MessageBoxW(0, last_line, "Your title", 1)
                 firstLast, secondLast = last_line.split(',', 1)
-                ctypes.windll.user32.MessageBoxW(0, firstLast, "Your title", 1)
-                ctypes.windll.user32.MessageBoxW(0, secondLast, "Your title", 1)
+                #ctypes.windll.user32.MessageBoxW(0, firstLast, "Your title", 1)
+                #ctypes.windll.user32.MessageBoxW(0, secondLast, "Your title", 1)
                 ## PUT STUFF HERE TO GET JUST THE BLOCK
                 workingBlock = workingBlock + (int(firstLast)+1);
-        ctypes.windll.user32.MessageBoxW(0, "Working Block: ", "Your title", 1)
-        ctypes.windll.user32.MessageBoxW(0, str(workingBlock), "Your title", 1)
+                print("latest downloaded block: ")
+                print(workingBlock)
+        else:
+                print("No database detected, must generate")
+        #ctypes.windll.user32.MessageBoxW(0, "Working Block: ", "Your title", 1)
+        #ctypes.windll.user32.MessageBoxW(0, str(workingBlock), "Your title", 1)
         currentBlock = getCurrentBlock();
         currentBlockInt = int(currentBlock)
         
@@ -96,13 +135,20 @@ def main(argv):
                 if (int(currentBlock) > workingBlock):
                         while (workingBlock < currentBlockInt):
                                 logData(workingBlock);
+                                if(getMinerByBlock(workingBlock) == etherbase):
+                                        print("I GOT A BLOCK")
+                                        print(workingBlock)
+                                        extraData = getExtraDataByBlock(workingBlock)
+                                        print("Extra data for mined block: ")
+                                        print(extraData)
                                 workingBlock=workingBlock+1;
-                pause(delay)
+                
 
-                blocksByMiner = getMinedBlocksByAddress(0x197b391d4a7b4306f709177da18ed12a0ac0eaa3)
-               
-                ctypes.windll.user32.MessageBoxW(0, blocksByMiner, "Your title", 1)
-        
+            #    miner = getMinerByBlock(37016)
+             #   allBlocks = getMinedBlocksByAddress(etherbase)
+              #  ctypes.windll.user32.MessageBoxW(0, miner, "Your title", 1)
+                
+                time.sleep(delay)
 
                 
         return;
