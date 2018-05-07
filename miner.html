@@ -1,0 +1,62 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<!-- Link for boostrap CSS support -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+
+<!-- link for CSS stylesheet -->
+<link rel="stylesheet" href="styles.css">
+
+<nav class="navbar navbar-light navbar-expand-lg" style="background-color: #e3f2fd;">
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+    <div class="navbar-nav">
+      <a class="nav-item nav-link active" href="/">Home <span class="sr-only">(current)</span></a>
+      <a class="nav-item nav-link" href="/about">About</a>
+    </div>
+  </div>
+</nav>
+
+<!--Lets make this shit -->
+<h1>Here is blocks mined</h1>  
+<h2>"Etherbase: {{etherbase}}" </h2>
+<h2>"Total Blocks Mined: {{blockCount}}" </h2>
+
+<table class=' height: 100px; table table-hover data-spy="scroll" overflow: auto table table-bordered thead-dark table-responsive table-striped' style='margin-left: auto; margin-right: auto'>
+    <thead>
+    	<tr>
+    	<th scope="col">Key</th>
+    	<th scope="col">Blocks Mined</th>
+    </tr>
+    </thead>
+    <tbody>
+        	{% for line in data3 %}
+            <tr>
+             
+                <td>{{line.extra_data}}</td>
+                <td>{{line.theCount}}</td>
+                
+            </tr>
+        	{% endfor %}
+      </tbody>
+
+</table>
+
+
+</div>
+
+</div>
+
+
+
+
+
+
+
+</search>
+<div class="footer">
+  <p>Donations (ETH): 0x56cb568aa7a1b1ba182165e42ed138b9cec884fc</p>
+</div>
+
+</html>

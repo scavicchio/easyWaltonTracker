@@ -1,4 +1,4 @@
-#import pymysql.cursors
+import pymysql.cursors
 import ctypes
 import os.path
 import time
@@ -16,7 +16,7 @@ defaultWalletPath = "C:/Program Files/WTC/"
 #Configure MySQL
 conn = pymysql.connect(host='localhost',
                         user='root',
-                        password='',
+                        password='root',
                         db='waltonchain',
                         charset='utf8mb4',
                         cursorclass=pymysql.cursors.DictCursor)
@@ -33,14 +33,19 @@ def getBlockExtraData(blockNum):
     p = subprocess.Popen("\""+defaultWalletPath+"walton.exe\" attach http://127.0.0.1:8545 --exec web3.toAscii(eth.getBlock("+blockString+").extraData)", shell=True, stdout=subprocess.PIPE)
     p.wait()
     stdout = p.communicate()[0]
-    return stdout.decode("utf-8").strip()
+    fullString = stdout.decode('utf-8')
+    return fullString
 
 def getBlockMiner(blockNum):
         blockString = str(blockNum)
         p = subprocess.Popen("\""+defaultWalletPath+"walton.exe\" attach http://127.0.0.1:8545 --exec eth.getBlock("+blockString+").miner", shell=True, stdout=subprocess.PIPE)
         p.wait()
         stdout = p.communicate()[0]
-        return stdout.decode("utf-8").strip()
+        miner = stdout.decode("utf-8").strip()
+        minerTruncated = miner.strip('"')
+        #this was a test
+        #print(minerTruncated)
+        return minerTruncated
 
 def getBlockDifficulty(blockNum):
         blockString = str(blockNum)
@@ -54,7 +59,8 @@ def getBlockTimeStamp(blockNum):
         p = subprocess.Popen("\""+defaultWalletPath+"walton.exe\" attach http://127.0.0.1:8545 --exec eth.getBlock("+blockString+").timestamp", shell=True, stdout=subprocess.PIPE)
         p.wait()
         stdout = p.communicate()[0]
-        return stdout.decode("utf-8").strip()
+        timeEpoch = stdout.decode("utf-8").strip()
+        return  time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(int(timeEpoch)))
 
 def getAllBlockData(blockNum):
     extraData = getBlockExtraData(blockNum)
@@ -65,10 +71,11 @@ def getAllBlockData(blockNum):
     return (extraData,miner,difficulty,timestamp)
 
 #adding data to the SQL database in the BlockChain table
-def insertToDatabase(blockNum,miner,extraData,difficulty,timest):
+def insertToDatabase(blockNum,):
     cursor = conn.cursor()
+    # needs to be order: block, miner, extra, difficulty, tiemstamp
     query = 'INSERT INTO BlockChain VALUES(%s, %s, %s, %s, %s)'
-    cursor.execute(query, (blockNum,miner,extraData,difficulty,timest))
+    cursor.execute(query, (blockNum,getBlockMiner(blockNum),getBlockExtraData(blockNum),getBlockDifficulty(blockNum),getBlockTimeStamp(blockNum)))
     conn.commit()
     cursor.close()
     return
@@ -79,25 +86,28 @@ def getLatestBlockFromDB():
     cursor.execute(query)
     latestBlock = cursor.fetchone()
     cursor.close()
+    print(latestBlock)
     return latestBlock;
 
 def checkForInitialSetup():
+    print("enetered check initial")
     cursor = conn.cursor()
-    query = 'SELECT COUNT(blockNum) FROM BlockChain'
+    query = 'SELECT * FROM BlockChain'
     cursor.execute(query)
-    data = cursor.fetchone()
-    if (query == 0): #must get all database data
+    if (cursor.rowcount == 0): #must get all database data
+        print("returning TRUE")
         return True;
     
     return False;
 
 # won't really work since the current block will advance while we run this setup, but we can fix that later when the main updates. 
 def runInitialSetup():
+    print("entered initial setup")
     block = 1 #start at the top!
     currentBlock = getCurrentBlock()
 
     while (block <= currentBlock):
-        insertToDatabase(block,getAllBlockData(block))
+        insertToDatabase(block)
         block = block +1;
 
     return
@@ -105,20 +115,23 @@ def runInitialSetup():
 
 #test to print the get all data
 def main():
-    
+    workingBlock = 0;
     #check initial setup (basically if this is the first time this program is run it needs to create the database)
     if checkForInitialSetup():
         runInitialSetup();
 
-    int LatestBlock = getLatestBlockFromDB(); # last one that we got data for in DB
-    int workingBlock = LatestBlock+1; # the one we are working on right now
-    int currentBlock = getCurrentBlock(); # the current latest block being mined
-    int delay = 60; # how long to wait before checking if up to date
+    placeholder = getLatestBlockFromDB(); # last one that we got data for in DB
+    LatestBlock = placeholder["blockNum"]
+    print(LatestBlock)
+
+    workingBlock = LatestBlock+1; # the one we are working on right now
+    currentBlock = getCurrentBlock(); # the current latest block being mined
+    delay = 60; # how long to wait before checking if up to date
 
     #check if we are up to date and get the latest block from the database
     while True:
         if (workingBlock<currentBlock):
-            insertToDatabase(workingBlock,getAllBlockData(workingBlock))
+            insertToDatabase(workingBlock)
             workingBlock=workingBlock+1;
         time.sleep(delay)
 
