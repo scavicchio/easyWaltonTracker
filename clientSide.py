@@ -21,7 +21,7 @@ app = Flask(__name__)
 conn = pymysql.connect(host='52.14.91.37',
                        port = 3306,
                        user='remoteclient',
-                       password='root',
+                       password='',
                        db='waltonchain',
                        charset='utf8mb4',
                        cursorclass=pymysql.cursors.DictCursor)
