@@ -17,7 +17,7 @@ defaultWalletPath = "C:/Program Files/WTC/"
 conn = pymysql.connect(host='52.14.91.37',
                         port = 3306,
                         user='remoteroot',
-                        password='angelcash',
+                        password='',
                         db='waltonchain',
                         charset='utf8mb4',
                         cursorclass=pymysql.cursors.DictCursor)
