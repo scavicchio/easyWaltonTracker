@@ -14,9 +14,10 @@ versionStr = "v1.1"
 defaultWalletPath = "C:/Program Files/WTC/"
 
 #Configure MySQL
-conn = pymysql.connect(host='localhost',
-                        user='root',
-                        password='root',
+conn = pymysql.connect(host='52.14.91.37',
+                        port = 3306,
+                        user='remoteroot',
+                        password='angelcash',
                         db='waltonchain',
                         charset='utf8mb4',
                         cursorclass=pymysql.cursors.DictCursor)
@@ -89,36 +90,17 @@ def getLatestBlockFromDB():
     print(latestBlock)
     return latestBlock;
 
-def checkForInitialSetup():
-    print("enetered check initial")
-    cursor = conn.cursor()
-    query = 'SELECT * FROM BlockChain'
-    cursor.execute(query)
-    if (cursor.rowcount == 0): #must get all database data
-        print("returning TRUE")
-        return True;
-    
-    return False;
 
-# won't really work since the current block will advance while we run this setup, but we can fix that later when the main updates. 
-def runInitialSetup():
-    print("entered initial setup")
-    block = 1 #start at the top!
-    currentBlock = getCurrentBlock()
-
-    while (block <= currentBlock):
-        insertToDatabase(block)
-        block = block +1;
-
+def runUntilCurrent(workingBlock,currentBlock):
+    while(workingBlock < currentBlock):
+        insertToDatabase(workingBlock)
+        workingBlock = workingBlock+1
+        
     return
-
-
+    
 #test to print the get all data
 def main():
     workingBlock = 0;
-    #check initial setup (basically if this is the first time this program is run it needs to create the database)
-    if checkForInitialSetup():
-        runInitialSetup();
 
     placeholder = getLatestBlockFromDB(); # last one that we got data for in DB
     LatestBlock = placeholder["blockNum"]
@@ -128,11 +110,14 @@ def main():
     currentBlock = getCurrentBlock(); # the current latest block being mined
     delay = 60; # how long to wait before checking if up to date
 
+    runUntilCurrent(workingBlock,currentBlock);
+    
     #check if we are up to date and get the latest block from the database
     while True:
+        currentBlock = getCurrentBlock()
+        workingBlock = getLatestBlockFromDB()["blockNum"]+1;
         if (workingBlock<currentBlock):
-            insertToDatabase(workingBlock)
-            workingBlock=workingBlock+1;
+            runUntilCurrent(workingBlock,currentBlock)
         time.sleep(delay)
 
     return;
