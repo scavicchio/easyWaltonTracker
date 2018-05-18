@@ -12,6 +12,8 @@ import csv
 #GLOBAL VARIABLES
 versionStr = "v1.1"
 defaultWalletPath = "C:/Program Files/WTC/"
+defaultWIN = "gethgo1.10windows"
+defaultLINUX = "gethgo1.9.2 linux"
 
 #Configure MySQL
 conn = pymysql.connect(host='52.14.91.37',
@@ -35,6 +37,11 @@ def getBlockExtraData(blockNum):
     p.wait()
     stdout = p.communicate()[0]
     fullString = stdout.decode('utf-8')
+    print("extra data, block: ", blocknum ", data: ", fullString)
+    if (fullString == defaultWIN):
+      return "Default Windows"
+    if (fullString == defaultLINUX):
+      return "Default Linux"
     return fullString
 
 def getBlockMiner(blockNum):
@@ -92,6 +99,7 @@ def getLatestBlockFromDB():
 
 
 def runUntilCurrent(workingBlock,currentBlock):
+    print("running until current, working block: ", workingBlock
     while(workingBlock < currentBlock):
         insertToDatabase(workingBlock)
         workingBlock = workingBlock+1
@@ -108,7 +116,7 @@ def main():
 
     workingBlock = LatestBlock+1; # the one we are working on right now
     currentBlock = getCurrentBlock(); # the current latest block being mined
-    delay = 60; # how long to wait before checking if up to date
+    delay = 10; # how long to wait before checking if up to date
 
     runUntilCurrent(workingBlock,currentBlock);
     
