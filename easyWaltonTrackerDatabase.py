@@ -16,9 +16,9 @@ defaultWIN = "gethgo1.10windows"
 defaultLINUX = "gethgo1.9.2 linux"
 
 #Configure MySQL
-conn = pymysql.connect(host='52.14.91.37',
+conn = pymysql.connect(host='waltonchain.ci9smifyvaqf.us-east-2.rds.amazonaws.com',
                         port = 3306,
-                        user='remoteroot',
+                        user='salvy',
                         password='',
                         db='waltonchain',
                         charset='utf8mb4',
