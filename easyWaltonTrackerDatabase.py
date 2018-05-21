@@ -19,11 +19,30 @@ defaultLINUX = "gethgo1.9.2 linux"
 conn = pymysql.connect(host='waltonchain.ci9smifyvaqf.us-east-2.rds.amazonaws.com',
                         port = 3306,
                         user='salvy',
-                        password='',
-                        db='waltonchain',
+                        password='angelcash',
+                        db='BlockChain',
                         charset='utf8mb4',
                         cursorclass=pymysql.cursors.DictCursor)
 
+# try to grab from a known Default Linux block
+def getDefaultLinux():
+    blockString = str(1)
+    p = subprocess.Popen("\""+defaultWalletPath+"walton.exe\" attach http://127.0.0.1:8545 --exec web3.toAscii(eth.getBlock("+blockString+").extraData)", shell=True, stdout=subprocess.PIPE)
+    p.wait()
+    stdout = p.communicate()[0]
+    default = stdout.decode('utf-8')
+    return default
+
+# try to grab from a known Default Windows block
+def getDefaultWindows():
+    blockString = str(1510)
+    p = subprocess.Popen("\""+defaultWalletPath+"walton.exe\" attach http://127.0.0.1:8545 --exec web3.toAscii(eth.getBlock("+blockString+").extraData)", shell=True, stdout=subprocess.PIPE)
+    p.wait()
+    stdout = p.communicate()[0]
+    default = stdout.decode('utf-8')
+    return default
+
+    
 #Grabbing data from the blockchain
 def getCurrentBlock():
     p = subprocess.Popen("\""+defaultWalletPath+"walton.exe\" attach http://127.0.0.1:8545 --exec eth.blockNumber", shell=True, stdout=subprocess.PIPE)
@@ -36,12 +55,16 @@ def getBlockExtraData(blockNum):
     p = subprocess.Popen("\""+defaultWalletPath+"walton.exe\" attach http://127.0.0.1:8545 --exec web3.toAscii(eth.getBlock("+blockString+").extraData)", shell=True, stdout=subprocess.PIPE)
     p.wait()
     stdout = p.communicate()[0]
-    fullString = stdout.decode('utf-8')
-    print("extra data, block: ", blocknum ", data: ", fullString)
-    if (fullString == defaultWIN):
-      return "Default Windows"
-    if (fullString == defaultLINUX):
-      return "Default Linux"
+    fullString = stdout.decode('utf-8').strip('"')
+    decoded = fullString
+    print("extra data, block: ", blockNum, ", data: ", decoded)
+    
+    if (decoded == defaultWIN):
+        print('Replaced Default Win on block:', blockNum)
+        return "Default Windows"
+    if (decoded == defaultLINUX):
+        print('Replaced Default Linux on block:', blockNum)
+        return "Default Linux"
     return fullString
 
 def getBlockMiner(blockNum):
@@ -99,8 +122,8 @@ def getLatestBlockFromDB():
 
 
 def runUntilCurrent(workingBlock,currentBlock):
-    print("running until current, working block: ", workingBlock
-    while(workingBlock < currentBlock):
+    print("running until current, working block: ", workingBlock)
+    while (workingBlock < currentBlock):
         insertToDatabase(workingBlock)
         workingBlock = workingBlock+1
         
@@ -110,6 +133,13 @@ def runUntilCurrent(workingBlock,currentBlock):
 def main():
     workingBlock = 0;
 
+    #get defaults
+    defaultWIN = getDefaultWindows().rstrip().strip('"')
+    defaultLINUX = getDefaultLinux().rstrip().strip('"')
+    print('Set Defaults...')
+    print('windows default: ', defaultWIN)
+    print('linux default: ', defaultLINUX)
+    
     placeholder = getLatestBlockFromDB(); # last one that we got data for in DB
     LatestBlock = placeholder["blockNum"]
     print(LatestBlock)
