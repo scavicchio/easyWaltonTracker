@@ -19,7 +19,7 @@ defaultLINUX = "gethgo1.9.2 linux"
 conn = pymysql.connect(host='waltonchain.ci9smifyvaqf.us-east-2.rds.amazonaws.com',
                         port = 3306,
                         user='salvy',
-                        password='angelcash',
+                        password='',
                         db='BlockChain',
                         charset='utf8mb4',
                         cursorclass=pymysql.cursors.DictCursor)
