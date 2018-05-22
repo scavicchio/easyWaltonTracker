@@ -7,13 +7,12 @@ import sys
 import subprocess
 import argparse
 import ctypes   
-import csv
 
 #GLOBAL VARIABLES
 versionStr = "v1.1"
 defaultWalletPath = "C:/Program Files/WTC/"
-defaultWIN = "gethgo1.10windows"
-defaultLINUX = "gethgo1.9.2 linux"
+defaultWIN = ""
+defaultLINUX = ""
 
 #Configure MySQL
 conn = pymysql.connect(host='waltonchain.ci9smifyvaqf.us-east-2.rds.amazonaws.com',
@@ -42,7 +41,6 @@ def getDefaultWindows():
     default = stdout.decode('utf-8')
     return default
 
-    
 #Grabbing data from the blockchain
 def getCurrentBlock():
     p = subprocess.Popen("\""+defaultWalletPath+"walton.exe\" attach http://127.0.0.1:8545 --exec eth.blockNumber", shell=True, stdout=subprocess.PIPE)
@@ -50,63 +48,20 @@ def getCurrentBlock():
     stdout = p.communicate()[0]
     return int(stdout.decode("utf-8").strip())
 
-def getBlockExtraData(blockNum):
-    blockString = str(blockNum)
-    p = subprocess.Popen("\""+defaultWalletPath+"walton.exe\" attach http://127.0.0.1:8545 --exec web3.toAscii(eth.getBlock("+blockString+").extraData)", shell=True, stdout=subprocess.PIPE)
-    p.wait()
-    stdout = p.communicate()[0]
-    fullString = stdout.decode('utf-8').strip('"')
-    decoded = fullString
-    print("extra data, block: ", blockNum, ", data: ", decoded)
-    
-    if (decoded == defaultWIN):
-        print('Replaced Default Win on block:', blockNum)
-        return "Default Windows"
-    if (decoded == defaultLINUX):
-        print('Replaced Default Linux on block:', blockNum)
-        return "Default Linux"
-    return fullString
-
-def getBlockMiner(blockNum):
-        blockString = str(blockNum)
-        p = subprocess.Popen("\""+defaultWalletPath+"walton.exe\" attach http://127.0.0.1:8545 --exec eth.getBlock("+blockString+").miner", shell=True, stdout=subprocess.PIPE)
-        p.wait()
-        stdout = p.communicate()[0]
-        miner = stdout.decode("utf-8").strip()
-        minerTruncated = miner.strip('"')
-        #this was a test
-        #print(minerTruncated)
-        return minerTruncated
-
-def getBlockDifficulty(blockNum):
-        blockString = str(blockNum)
-        p = subprocess.Popen("\""+defaultWalletPath+"walton.exe\" attach http://127.0.0.1:8545 --exec eth.getBlock("+blockString+").difficulty", shell=True, stdout=subprocess.PIPE)
-        p.wait()
-        stdout = p.communicate()[0]
-        return stdout.decode("utf-8").strip()
-
-def getBlockTimeStamp(blockNum):
-        blockString = str(blockNum)
-        p = subprocess.Popen("\""+defaultWalletPath+"walton.exe\" attach http://127.0.0.1:8545 --exec eth.getBlock("+blockString+").timestamp", shell=True, stdout=subprocess.PIPE)
-        p.wait()
-        stdout = p.communicate()[0]
-        timeEpoch = stdout.decode("utf-8").strip()
-        return  time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(int(timeEpoch)))
-
+# Getting all the data from a block
 def getAllBlockData(blockNum):
-    extraData = getBlockExtraData(blockNum)
-    miner = getBlockMiner(blockNum)
-    difficulty = getBlockDifficulty(blockNum)
-    timestamp = getBlockTimeStamp(blockNum)
-
-    return (extraData,miner,difficulty,timestamp)
+  blockString = str(blockNum)
+  p = subprocess.Popen("\""+defaultWalletPath+"walton.exe\" attach http://127.0.0.1:8545 --exec eth.getBlock("+blockString+")", shell=True, stdout=subprocess.PIPE)
+  p.wait()
+  data = p.communicate()[0]
+  return data
 
 #adding data to the SQL database in the BlockChain table
 def insertToDatabase(blockNum,):
     cursor = conn.cursor()
     # needs to be order: block, miner, extra, difficulty, tiemstamp
     query = 'INSERT INTO BlockChain VALUES(%s, %s, %s, %s, %s)'
-    cursor.execute(query, (blockNum,getBlockMiner(blockNum),getBlockExtraData(blockNum),getBlockDifficulty(blockNum),getBlockTimeStamp(blockNum)))
+    cursor.execute(query, (getAllBlockData(blockNum)))
     conn.commit()
     cursor.close()
     return
@@ -119,7 +74,6 @@ def getLatestBlockFromDB():
     cursor.close()
     print(latestBlock)
     return latestBlock;
-
 
 def runUntilCurrent(workingBlock,currentBlock):
     print("running until current, working block: ", workingBlock)
