@@ -1,50 +1,75 @@
+html, body {
+  height: 100%;
+  margin: 0;
+}
+.content {
+  min-height: 100%;
+}
+.content-inside {
+  padding: 20px;
+  padding-bottom: 50px;
+}
+.footer {
+  height: 50px;
+  margin-top: -50px;
+}
+
+
+
+
+
+
+
+
+
+
+
+body {
+  font: 16px Sans-Serif;
+}
 h1 {
-    color: blue;
+  margin: 0 0 20px 0;
 }
 p {
-    color: red;
+  margin: 20px 0 0 0;
 }
-
-.vertical-center {
-  min-height: 100%;  /* Fallback for browsers do NOT support vh unit */
-  min-height: 100vh; /* These two lines are counted as one :-)       */
-
-  display: flex;
-  align-items: center;
+footer {
+  background: #42A5F5;
+  color: white;
+  line-height: 50px;
+  padding: 0 20px;
 }
 
 table {
-	height: 30px;
+        width: 100%;
+    }
 
+thead, tbody, tr, td, th { display: block; }
+
+tr:after {
+    content: ' ';
+    display: block;
+    visibility: hidden;
+    clear: both;
 }
 
-b {
-	text-align: center;
+thead th {
+    height: 30px;
+
+    /*text-align: left;*/
 }
 
-.mt-0 {
-  margin-top: 0 !important;
+tbody {
+    height: 120px;
+    overflow-y: auto;
 }
 
-.ml-1 {
-  margin-left: ($spacer * .25) !important;
+thead {
+    /* fallback */
 }
 
-.px-2 {
-  padding-left: ($spacer * .5) !important;
-  padding-right: ($spacer * .5) !important;
-}
 
-.p-3 {
-  padding: $spacer !important;
-}
-
-.footer {
-    position: fixed;
-    left: 0;
-    bottom: 0;
-    width: 100%;
-    background-color: blue;
-    color: white;
-    text-align: center;
+tbody td, thead th {
+    width: 19.2%;
+    float: left;
 }

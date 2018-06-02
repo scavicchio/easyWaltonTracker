@@ -1,65 +1,102 @@
-<!DOCTYPE HTML>
-<html lang="en">
-<!-- Link for boostrap CSS support -->
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+{% extends "template.html" %}
+{% block content %}
 
-<!-- link for CSS stylesheet -->
-<link rel="stylesheet" href="styles.css">
-
-<nav class="navbar navbar-light navbar-expand-lg" style="background-color: #e3f2fd;">
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
-  <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-    <div class="navbar-nav">
-      <a class="nav-item nav-link active" href="/">Home <span class="sr-only">(current)</span></a>
-      <a class="nav-item nav-link" href="/about">About</a>
-    </div>
-  </div>
-</nav>
-
-
-<h1> Latest Block: {{latestBlock}} </h1>
 
 <!--Lets make this shit -->
-<h1>Here is blocks mined</h1>  
-<h2>"Etherbase: {{etherbase}}" </h2>
-<h2>"Total Blocks Mined: {{blockCount}}" </h2>
+<style>
 
-<table class=' height: 100px; table table-hover data-spy="scroll" overflow: auto table table-bordered thead-dark table-responsive table-striped' style='margin-left: auto; margin-right: auto'>
-    <thead>
-    	<tr>
-    	<th scope="col">Key</th>
-    	<th scope="col">Blocks Mined</th>
-    </tr>
-    </thead>
-    <tbody>
-        	{% for line in data3 %}
-            <tr>
-             
-                <td>{{line.extra_data}}</td>
-                <td>{{line.theCount}}</td>
-                
-            </tr>
-        	{% endfor %}
-      </tbody>
+
+.tr {
+width: 100%;
+display: inline-table;
+height:60px;
+table-layout: fixed;
+  
+}
+
+.table{
+ height:300px; 
+ display: -moz-groupbox;
+}
+.tbody{
+  overflow-y: scroll;
+  height: 200px;
+  width: 100%;
+  position: absolute;
+}
+</style>
+<div class="container"  overflow: auto>
+
+
+
+<h4>Etherbase: {{etherbase}} </h4>
+<h5>Total Blocks Mined: {{blockCount}} </h5>
+
+{% block minerChart %} {% endblock %}
+
+<div class="container">
+  <div class="row">
+    <div class="col">
+
+<h3> All Mined Blocks </h3>
+<div id="lastFiveTable">
+<table class='height: 100px; table text-centered table-hover data-spy="scroll" overflow: auto table  table-striped table-sm table-responsive ' style='margin-left: auto; margin-right: auto'>
+
+	<thead>
+		<tr>
+			<th scope="col">Block</th>
+			<th scope="col">Key</th>
+			<th scope="col">TimeStamp</th>
+			{#
+			<th scope="col">Difficulty</th>
+			<th scope="col">Gas</th> 
+			#}
+		</tr>
+	</thead>
+	<tbody>
+		{% for line2 in lastFive %}
+		<tr>
+			<td><a href="http://waltonchain.net/#/blockNumber?blockNumber={{line2.blockNum}}">{{line2.blockNum}}</a></td>
+			<td>{{line2.extra_data}}</td>
+			<td>{{line2.timest}}</td>
+			{#
+			<td>{{line2.difficulty}}</td>
+			<td>{{line2.gasUsed}}</td>
+			#}
+		</tr>
+		{% endfor %}
+	</tbody>
+</table>
+</div>
+ </div>
+  <div class="col">
+
+<div id="BlockRigTotal" style="overflow: scroll">
+
+	<h3>All Time</h3>
+<table class='max-height:300px table text-centered table-hover data-spy="scroll" overflow: auto tabletable-striped table-sm table-responsive ' style='margin-left: auto; margin-right: auto'>
+		<thead>
+			<tr>
+			<th scope="col">Key</th>
+			<th scope="col">Blocks</th>
+			
+		</tr>
+		</thead>
+		<tbody>
+					{% for line in data3 %}
+						<tr>
+						 
+								<td>{{line.extra_data}}</td>
+								<td>{{line.theCount}}</td>
+								
+						</tr>
+					{% endfor %}
+			</tbody>
 
 </table>
-
-
+</div>
+</div>
 </div>
 
-</div>
+{% endblock %}
 
-
-
-
-
-
-
-</search>
-<div class="footer">
-  <p>Donations (ETH): 0x56cb568aa7a1b1ba182165e42ed138b9cec884fc</p>
-</div>
-
-</html>

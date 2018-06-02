@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+
+<!-- BOOTSTRAP CDN -->
+
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>
+
+<link rel="stylesheet" type="text/css" href="styles.css">
+
+<style>
+.navbar {
+
+   margin-bottom: 20px;
+
+    background-color: lightblue;
+}
+</style>
+
+<!-- NAVBAR -->
+<nav id="navbar-example2" class="navbar sticky-top bg-light">
+  <a class="navbar-brand" href="/">Home</a>
+  <a class="navbar-brand" href="/#About">About</a>
+  <a class="navbar-brand" href="/#FAQ">FAQ</a>
+  <a class="navbar-brand" href="/howto">How To</a>
+  <a class="navbar-brand" href="/alerts">Alerts</a>
+  <ul class="nav nav-pills">
+    <li class="nav-item">
+      <a class="nav-link">Latest Block: {{latestBlock}}</a>
+    </li>
+    
+  </ul>
+</nav>
+
+ {% block content %}{% endblock %}
+
+
+
+<!-- FOOTER -->
+<!-- Footer -->
+
+<style>
+.footer,
+.push {
+  height: 50px;
+  margin-top: 50px;
+  flex-shrink: 0;
+}
+
+</style>
+
+<div class = "footer">
+<footer class="footer">
+      <div class="container">
+        <span class="text-muted">
+ <!-- Grid row -->
+    <div class="row">
+
+      <!-- Grid column -->
+      <div class="col-md-6 mt-md-0 mt-3">
+
+        <!-- Content -->
+        <h6 class="text-uppercase">Contact Us  </h6>
+        <p><p></p></p>
+
+      </div>
+      <!-- Grid column -->
+
+      <hr class="clearfix w-100 d-md-none pb-3">
+
+      <!-- Grid column -->
+      <div class="col-md-6 mb-md-0 mb-3">
+
+        <!-- Links -->
+      {#  <h6 class="text-uppercase"> </h6> #}
+
+        <ul class="list-unstyled">
+          <li>
+            Email: easyWaltonMiner@gmail.com
+          </li>
+          <li>
+            Reddit: <a href="https://reddit.com/u/scavicchio">u/scavicchio</a>
+          </li>
+          <li>
+            GitHub: <a href="https://github.com/scavicchio">@scavicchio</a>
+          </li>
+        </ul>
+</div>
+</div>
+</span>
+
+</div>
+</div>
+</footer>
+</html>
+

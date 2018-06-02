@@ -1,72 +1,112 @@
-<!DOCTYPE HTML>
-<html lang="en">
-<!-- Link for boostrap CSS support -->
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+{% extends "template.html" %}
+{% set active_page = "home" %}
+{% block content %}
 
-<!-- jQuery library -->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-
-<!-- Latest compiled JavaScript -->
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-
-<!-- link for CSS stylesheet -->
-<link rel="stylesheet" href="styles.css">
-
-
-<nav class="navbar navbar-light navbar-expand-lg" style="background-color: #e3f2fd;">
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
-  <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-    <div class="navbar-nav">
-      <a class="nav-item nav-link active" href="/">Home <span class="sr-only">(current)</span></a>
-      <a class="nav-item nav-link" href="/about">About</a>
-    </div>
-  </div>
-</nav>
-
-<h1> Latest Block: {{latestBlock}} </h1>
-<!--Lets make this shit -->
+{% if error %}
+<div class="alert alert-danger alert-dismissible">
+  <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+  <strong>ERROR</strong> {{error}}.
+</div>
+{% endif %}
 
 <div class="container">
 
 <div class="jumbotron"  >
-  <h1>Welcome to the Easy Walton Tracker!</h1>
-  <p>Search your wallet address below to get started</p>
-  <form action="/search" method="POST">
-  <div class="search_bar">
-        <input type="text" name = "etherbase" placeholder="Enter Wallet Address" required/>
-        <input type="submit", value = "Search" />
+	<h1>Welcome to the Easy Walton Tracker! BETA </h1>
+	<p>Search your wallet address below to get started</p>
+
+	<form action="/search" method="POST">
+	<div class="input-group">
+      <input type="text" class="form-control" name="etherbase" placeholder="Enter Wallet Address"" aria-label="Search for...">
+      <span class="input-group-btn">
+        <input class="btn btn-primary btn-lg active" type="submit" role="intput" aria-pressed="true"></a>
+      </span>
     </div>
 </form>
+</div>
 
-</div class='container'>
-	<h1> F.A.Q. </h1>
-	<h3> What is this website? </h3>
+
+
+
+<div id="Last10Blocks">
+	<h3>Demo of Last 10 Blocks</h3>
+
+	<table class='height: 100px; max-width: 100%; table table-hover data-spy="scroll" overflow: auto table table-striped table-responsive ' style='margin-left: auto; margin-right: auto'>
+		<thead>
+			<tr>
+			<th scope="col">Block</th>
+			<th scope="col">Wallet</th>
+			<th scope="col">Rig</th>
+			<th scope="col">Difficulty (TH)</th>
+			<th scope="col">Gas</th>
+			<th scope="col">Time</th>
+		</tr>
+		</thead>
+		<tbody>
+					{% for line in lastTen %}
+						<tr>
+						 
+								<td>{{line.blockNum}}</td>
+								<td><a href="/miner/{{line.miner}}">{{line.miner}}</td>
+								<td>{{line.extra_data}}</td>
+								<td>{{line.difficulty}}</td>
+								<td>{{line.gasUsed}}</td>
+								<td>{{line.timest}}</td>
+								
+						</tr>
+					{% endfor %}
+			</tbody>
+
+	</table>
+</div>
+
+
+
+
+<div data-spy="scroll" data-target="#navbar-example2" data-offset="0">
+
+  <h4 id="About">About</h4>
+  <p>
+  	<b1>
+
+	</b1>
+
+  	<b1>
+		This website is made to be a free and not for profit tool for miners of Waltonchain. The purpose is to allow people to monitor blocks they mine with regard to each seperate mining machine. It is run and maintaned by Walton fans as a way to contribute to the community, but is not our full time job. We are not professionals, and we do not store and will not ever ask for any users information such as private keys. If you want to help out you can reach us below or make a contribution on our GitHub. <br/>
+	</b1>
+
+	<b1>
+		The website is currently running on a home server (personal computer), due to the Waltonchain mining program only being avaliable for Windows. Please forgive us if it is a bit slow to update to the latest blocks, migration to a better hosting service will happen as soon as possible. <br/>
+	</b1>
+
+	<b1>
+		Please note that this website is in BETA. We are focusing on getting everything working behind the scenes before making it look pretty. If anyone has any ideas or would like to help out contact us below. <br/>
+	</p>
+
+
+
+  <h4 id="FAQ">FAQ</h4>
+  <p><h5> What is this website? </h5>
 	<p3> This site is a tool for tracking blocks mined to the Waltonchain network. It tracks blocks by address and displays data such as the total blocks mined, when a block was mined by a certain address, and which computer mined each block. To see the data for a specific wallet address, just paste it in the searchbar above! </p3>
-	<h3> How do I setup my miner? </h3>
-	<p3> If you already are mining Walton, you are 99% of the way there! Just add the --extradata flag to your miner to start tracking your rigs. If you're new to Walton or mining in general, visit the "How to" page in the top navbar to see full instructions on how to setup your computer for Waltonchain </p3>
-	<h3> Who are you? </h3>
-	<p3> We are just some dudes from Brooklyn! Check out the "About" page to read more about us and why we are doing this.</p3>
+	<h5> How do I setup my miner? </h5>
+	<p3> If you already are mining Walton, you are 99% of the way there! Head over to our <a href="/howto">How To</a> page to view the requirements and finish setting up your miner for this service. <br/>  <br/>
+
+		If you have not started mining Walton yet, you can head on over to the <a href = "www.waltonchain.net">WaltonChain</a> website to download the latest miner. Unfortunately the latest miner will not work with this service, but we hope to get it working soon!
+
+	<h5> Who are you? </h5>
+	<p3> We are Walton supporters looking to contribute to the community. If you have any suggestions, you can contact us at the places below. </p3></p>
+  
+</p3>
+</p>
+
+
 
 </div>
-
-<div >
-
-<div class="footer">
-  <p>Donations (ETH): 0x56cb568aa7a1b1ba182165e42ed138b9cec884fc</p>
+</b1>
+</p>
+</div>
 </div>
 
-<style>
-.footer {
-    position: relative;
-    left: 0;
-    bottom: 0;
-    width: 100%;
-    background-color: lightblue;
-    color: black;
-    text-align: left;
-}
-</style>
 
-</html>
+{% endblock %}
+	
