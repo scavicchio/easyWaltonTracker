@@ -21,14 +21,14 @@ app = Flask(__name__)
 
 #GLOBAL VARS FOR EMAIL
 username = 'easyWaltonMiner@gmail.com'
-password = 'angelcash'
+password = ''
 difficultyHashMagnitude = 1000000000
 
 #Configure MySQL
 conn = pymysql.connect(host='waltonchain.ci9smifyvaqf.us-east-2.rds.amazonaws.com',
                        port = 3306,
                        user='remoteclient',
-                       password='remoteclient',
+                       password='',
                        db='waltonchain',
                        charset='utf8mb4',
                        cursorclass=pymysql.cursors.DictCursor)
@@ -38,7 +38,7 @@ def connect():
         conn = pymysql.connect(host='waltonchain.ci9smifyvaqf.us-east-2.rds.amazonaws.com',
                        port = 3306,
                        user='remoteclient',
-                       password='remoteclient',
+                       password='',
                        db='waltonchain',
                        charset='utf8mb4',
                        cursorclass=pymysql.cursors.DictCursor)
