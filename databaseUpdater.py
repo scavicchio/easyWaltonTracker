@@ -22,7 +22,7 @@ defaultWIN = "d883010700846765746886676f312e31308777696e646f7773"
 conn = pymysql.connect(host='waltonchain.ci9smifyvaqf.us-east-2.rds.amazonaws.com',
                         port = 3306,
                         user='blockUpdater',
-                        password='angelcash',
+                        password='',
                         db='waltonchain',
                         charset='utf8mb4',
                         cursorclass=pymysql.cursors.DictCursor)
