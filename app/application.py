@@ -19,30 +19,32 @@ import smtplib
 #Initialize the app from Flask
 app = Flask(__name__)
 
-#GLOBAL VARS FOR EMAIL
-username = 'easyWaltonMiner@gmail.com'
-password = ''
-difficultyHashMagnitude = 1000000000
+def connect(host,port,username,password,database):
+	conn = pymysql.connect(host=host,
+                        port = int(port),
+                        user=username,
+                        password=password,
+                        db=database,
+                        charset='utf8mb4',
+                        cursorclass=pymysql.cursors.DictCursor)
+	return conn
 
-#Configure MySQL
-conn = pymysql.connect(host='waltonchain.ci9smifyvaqf.us-east-2.rds.amazonaws.com',
-                       port = 3306,
-                       user='remoteclient',
-                       password='',
-                       db='waltonchain',
-                       charset='utf8mb4',
-                       cursorclass=pymysql.cursors.DictCursor)
+# Lets make some global vars
+with open("/clientinfo.txt", "r") as ins:
+	data = []
+	for line in ins:
+		data.append(line)
 
+	host = data[0].strip()
+	port = data[1].strip()
+	username = data[2].strip()
+	password = data[3].strip()
+	database = data[4].strip()
+	username = data[5].strip()
+	password = data[6].strip()
+	difficultyHashMagnitude = data[7].strip()
 
-def connect():
-        conn = pymysql.connect(host='waltonchain.ci9smifyvaqf.us-east-2.rds.amazonaws.com',
-                       port = 3306,
-                       user='remoteclient',
-                       password='',
-                       db='waltonchain',
-                       charset='utf8mb4',
-                       cursorclass=pymysql.cursors.DictCursor)
-        return conn
+conn = connect(host,port,username,password,database)
 
 ########## ########################### ##############   
 ########## ########################### ##############   

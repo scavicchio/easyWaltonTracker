@@ -2,3 +2,6 @@
 /server/Ignore/databaseUpdaterInfo.txt
 server/Ignore
 databaseUpdaterInfo.txt
+clientinfo.txt
+app/clientinfo.txt
+/app/clientinfo.txt
