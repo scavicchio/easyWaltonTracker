@@ -2,6 +2,8 @@
 {% set active_page = "home" %}
 {% block content %}
 
+<script src="/static/js/moment.min.js"></script>
+
 {% if error %}
 <div class="alert alert-danger alert-dismissible">
   <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
@@ -40,19 +42,29 @@
 			<th scope="col">Difficulty (TH)</th>
 			<th scope="col">Gas</th>
 			<th scope="col">Time</th>
+			<th scope="col">Date</th>
 		</tr>
 		</thead>
 		<tbody>
 					{% for line in lastTen %}
 						<tr>
-						 
 								<td>{{line.blockNum}}</td>
-								<td><a href="/miner/{{line.miner}}">{{line.miner}}</td>
+								<td><a href="/miner/{{line.miner}}">{{line.miner}}</a></td>
 								<td>{{line.extra_data}}</td>
 								<td>{{line.difficulty}}</td>
 								<td>{{line.gasUsed}}</td>
-								<td>{{line.timest}}</td>
-								
+								<td>
+									{# this is conversion to local datetime #}
+									{{ momentjs(line.timest).fromNow() }}
+									
+        						</td>
+
+        						<td>
+									{# this is conversion to local datetime #}
+									{{ momentjs(line.timest).calendar() }}
+									
+        						</td>
+
 						</tr>
 					{% endfor %}
 			</tbody>

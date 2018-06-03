@@ -2,6 +2,7 @@
 {% block content %}
 
 
+
 <!--Lets make this shit -->
 <style>
 
@@ -46,7 +47,8 @@ table-layout: fixed;
 		<tr>
 			<th scope="col">Block</th>
 			<th scope="col">Key</th>
-			<th scope="col">TimeStamp</th>
+			<th scope="col">Time</th>
+			<th scope="col">Date</th>
 			{#
 			<th scope="col">Difficulty</th>
 			<th scope="col">Gas</th> 
@@ -58,7 +60,17 @@ table-layout: fixed;
 		<tr>
 			<td><a href="http://waltonchain.net/#/blockNumber?blockNumber={{line2.blockNum}}">{{line2.blockNum}}</a></td>
 			<td>{{line2.extra_data}}</td>
-			<td>{{line2.timest}}</td>
+			<td>
+				{# this is conversion to local datetime #}
+				
+				{{ momentjs(line2.timest).fromNow() }}
+													
+			</td>
+			<td>
+				{# this is conversion to local datetime #}
+				{{ momentjs(line2.timest).calendar() }}
+			</td>
+
 			{#
 			<td>{{line2.difficulty}}</td>
 			<td>{{line2.gasUsed}}</td>
