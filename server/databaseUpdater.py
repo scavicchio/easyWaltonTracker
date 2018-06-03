@@ -18,14 +18,17 @@ defaultWalletPath = "C:/Program Files/WTC/"
 defaultLINUX = "d783010700846765746887676f312e392e32856c696e7578"
 defaultWIN = "d883010700846765746886676f312e31308777696e646f7773"
 
+
 #Configure MySQL
-conn = pymysql.connect(host='waltonchain.ci9smifyvaqf.us-east-2.rds.amazonaws.com',
-                        port = 3306,
-                        user='blockUpdater',
-                        password='',
-                        db='waltonchain',
+def connect(host,port,username,password,database):
+	conn = pymysql.connect(host=host,
+                        port = int(port),
+                        user=username,
+                        password=password,
+                        db=database,
                         charset='utf8mb4',
                         cursorclass=pymysql.cursors.DictCursor)
+	return conn
 
 # try to grab from a known Default Linux block
 def getDefaultLinux():
@@ -140,9 +143,26 @@ def runUntilCurrent(workingBlock,currentBlock):
     	workingBlock = workingBlock+1
         
     return
-    
+
+# so I can upload to github and not worry about hacking
+with open("Ignore/databaseUpdaterInfo.txt", "r") as ins:
+	data = []
+	for line in ins:
+		data.append(line)
+
+	host = data[0].strip()
+	port = data[1].strip()
+	username = data[2].strip()
+	password = data[3].strip()
+	database = data[4].strip()
+
+	print(host,port,username,password,database)
+
+conn = connect(host,port,username,password,database)
+
 #test to print the get all data
 def main():
+    
 
     workingBlock = 0;
     #problem block was 17743 fixed by removing p.wait() after communicate

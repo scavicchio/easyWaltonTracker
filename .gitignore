@@ -1,0 +1,4 @@
+# Ignore files
+/server/Ignore/databaseUpdaterInfo.txt
+server/Ignore
+databaseUpdaterInfo.txt
