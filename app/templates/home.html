@@ -2,6 +2,16 @@
 {% set active_page = "home" %}
 {% block content %}
 
+<style type="text/css">
+	
+h4 {
+border-bottom: 2px solid midnightblue;
+
+}
+</style>
+
+
+
 <script src="/static/js/moment.min.js"></script>
 
 {% if error %}
@@ -31,7 +41,7 @@
 
 
 <div id="Last10Blocks">
-	<h3>Demo of Last 10 Blocks</h3>
+	<h4>Demo of Last 10 Blocks</h4>
 
 	<table class='height: 100px; max-width: 100%; table table-hover data-spy="scroll" overflow: auto table table-striped table-responsive ' style='margin-left: auto; margin-right: auto'>
 		<thead>
@@ -40,7 +50,9 @@
 			<th scope="col">Wallet</th>
 			<th scope="col">Rig</th>
 			<th scope="col">Difficulty (TH)</th>
+			{#
 			<th scope="col">Gas</th>
+			#}
 			<th scope="col">Time</th>
 			<th scope="col">Date</th>
 		</tr>
@@ -48,11 +60,13 @@
 		<tbody>
 					{% for line in lastTen %}
 						<tr>
-								<td>{{line.blockNum}}</td>
+								<td><a href="http://waltonchain.net/#/blockNumber?blockNumber={{line.blockNum}}">{{line.blockNum}}</a></td>
 								<td><a href="/miner/{{line.miner}}">{{line.miner}}</a></td>
 								<td>{{line.extra_data}}</td>
 								<td>{{line.difficulty}}</td>
+								{#
 								<td>{{line.gasUsed}}</td>
+								#}
 								<td>
 									{# this is conversion to local datetime #}
 									{{ momentjs(line.timest).fromNow() }}

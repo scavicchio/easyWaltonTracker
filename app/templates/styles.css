@@ -9,10 +9,6 @@ html, body {
   padding: 20px;
   padding-bottom: 50px;
 }
-.footer {
-  height: 50px;
-  margin-top: -50px;
-}
 
 
 
@@ -34,10 +30,10 @@ p {
   margin: 20px 0 0 0;
 }
 footer {
-  background: #42A5F5;
-  color: white;
-  line-height: 50px;
-  padding: 0 20px;
+  background: lightcyan;
+  color: lightcyan;
+  line-height: 100px;
+  padding: 0px;
 }
 
 table {

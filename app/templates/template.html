@@ -11,7 +11,14 @@
 <link rel="stylesheet" type="text/css" href="styles.css">
 
 <script src="/static/js/moment.min.js"></script>
+<style type="text/css">
 
+a {
+  color: #2A5DB0;
+}
+
+
+</style>
 
 
 <!-- Global site tag (gtag.js) - Google Analytics -->
@@ -28,17 +35,21 @@
 
 </head>
 
-<style>
-.navbar {
+<style type="text/css">
 
-   margin-bottom: 20px;
-
-    background-color: lightblue;
+nav {
+background-color: midnightblue;
+margin-bottom: 20px;
 }
+
+.nav-pills {
+  color: white;
+}
+
 </style>
 
 <!-- NAVBAR -->
-<nav id="navbar-example2" class="navbar sticky-top bg-light">
+<nav id="navbar-example2" class="navbar sticky-top navbar-dark text-uppercase">
   <a class="navbar-brand" href="/">Home</a>
   <a class="navbar-brand" href="/#About">About</a>
   <a class="navbar-brand" href="/#FAQ">FAQ</a>
@@ -48,28 +59,34 @@
     <li class="nav-item">
       <a class="nav-link">Latest Block: {{latestBlock}}</a>
     </li>
-    
   </ul>
 </nav>
 
  {% block content %}{% endblock %}
 
 
-
 <!-- FOOTER -->
 <!-- Footer -->
 
-<style>
-.footer,
-.push {
-  height: 50px;
-  margin-top: 50px;
-  flex-shrink: 0;
+<style type="text/css">
+  
+footer {
+height: auto;
+margin-top: 50px;
+flex-shrink: 0;
+border-top: 2px solid midnightblue;
+
+display: flex;
+color: black;
+}
+
+.list-unstyled {
+  color: grey;
 }
 
 </style>
 
-<div class = "footer">
+
 <footer class="footer">
       <div class="container">
         <span class="text-muted">
@@ -81,7 +98,6 @@
 
         <!-- Content -->
         <h6 class="text-uppercase">Contact Us  </h6>
-        <p><p></p></p>
 
       </div>
       <!-- Grid column -->
@@ -104,14 +120,13 @@
           <li>
             Reddit: <a href="https://reddit.com/u/scavicchio">u/scavicchio</a>
           </li>
-          
         </ul>
 </div>
-</div>
 </span>
-
 </div>
 </div>
 </footer>
+
+
 </html>
 
