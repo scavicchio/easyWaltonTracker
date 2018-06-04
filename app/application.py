@@ -30,21 +30,21 @@ def connect(host,port,username,password,database):
 	return conn
 
 # Lets make some global vars
-with open("/clientinfo.txt", "r") as ins:
+with open("clientinfo.txt", "r") as ins:
 	data = []
 	for line in ins:
 		data.append(line)
 
 	host = data[0].strip()
 	port = data[1].strip()
-	username = data[2].strip()
-	password = data[3].strip()
+	dbUser = data[2].strip()
+	dbPassword = data[3].strip()
 	database = data[4].strip()
 	username = data[5].strip()
 	password = data[6].strip()
 	difficultyHashMagnitude = data[7].strip()
 
-conn = connect(host,port,username,password,database)
+conn = connect(host,port,dbUser,dbPassword,database)
 
 ########## ########################### ##############   
 ########## ########################### ##############   
