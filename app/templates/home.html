@@ -55,9 +55,9 @@ border-bottom: 2px solid midnightblue;
 			<th scope="col">Difficulty (TH)</th>
 			
 			<th scope="col">Gas</th>
-			#}
+			
 			<th scope="col">Time</th>
-		
+		#}
 		</tr>
 		</thead>
 		<tbody>
@@ -65,17 +65,18 @@ border-bottom: 2px solid midnightblue;
 						<tr>
 								<td><a href="http://waltonchain.net/#/blockNumber?blockNumber={{line.blockNum}}">{{line.blockNum}}</a></td>
 								<td><a href="/miner/{{line.miner}}">{{line.miner | truncate(10, True) }}</a></td>
-								<td>{{line.extra_data}}</td>
+								<td>{{line.extra_data | truncate(15, True) }}</td>
 								{#
 								<td>{{line.difficulty}}</td>
 								
 								<td>{{line.gasUsed}}</td>
-								#}
+								
 								<td>
-									{# this is conversion to local datetime #}
+									{# this is conversion to local datetime 
 									{{ momentjs(line.timest).fromNow() }}
 									
         						</td>
+        						#}
         						
 
 						</tr>
