@@ -42,6 +42,7 @@ border-bottom: 2px solid midnightblue;
 
 <div id="Last10Blocks">
 	<h4>Demo of Last 10 Blocks</h4>
+	<b1> Last Updated: {{ momentjs(lastUpdate).fromNow() }}
 </div>
 
 <div id="phone">
@@ -64,8 +65,8 @@ border-bottom: 2px solid midnightblue;
 					{% for line in lastTen %}
 						<tr>
 								<td><a href="http://waltonchain.net/#/blockNumber?blockNumber={{line.blockNum}}">{{line.blockNum}}</a></td>
-								<td><a href="/miner/{{line.miner}}">{{line.miner | truncate(10, True) }}</a></td>
-								<td>{{line.extra_data | truncate(15, True) }}</td>
+								<td><a href="/miner/{{line.miner}}">{{line.miner | truncate(7, True) }}</a></td>
+								<td>{{line.extra_data | truncate(13, True) }}</td>
 								{#
 								<td>{{line.difficulty}}</td>
 								

@@ -66,6 +66,14 @@ def getLatestBlockFromDB(conn):
     cursor.close()
     return latestBlock["blockNum"];
 
+def getLastUpdateTime(conn):    
+    cursor = conn.cursor()
+    query = 'SELECT timest FROM BlockChain ORDER BY blockNum DESC LIMIT 1'
+    cursor.execute(query)
+    latestBlock = cursor.fetchone()
+    cursor.close()
+    return latestBlock["timest"];
+
 # gets all data for a specific etherbase
 def getDataForMiner(conn, etherbase):
     cursor = conn.cursor()
@@ -254,12 +262,13 @@ def sendSignupConfirmation(etherbase,email,extra):
 def homepage(error="None"):
     conn = connect()
     latestBlock = getLatestBlockFromDB(conn)
+    lastUpdate = getLastUpdateTime(conn)
     lastTen = getLatestNBlocks(conn,10)
     conn.close()
     if (error != "None"):
-      return render_template('home.html',latestBlock=latestBlock,lastTen=lastTen,error=error)
+      return render_template('home.html',latestBlock=latestBlock,lastTen=lastTen,lastUpdate=lastUpdate,error=error)
 
-    return render_template('home.html',latestBlock=latestBlock,lastTen=lastTen)
+    return render_template('home.html',latestBlock=latestBlock,lastUpdate=lastUpdate,lastTen=lastTen)
 
 #about page
 @app.route('/about')
@@ -284,7 +293,7 @@ def searchMiner():
         lastTen = getLatestNBlocks(conn,10)
         conn.close()
         error = "Please Enter a Valid Wallet Address"
-        return render_template('home.html',latestBlock=latestBlock,lastTen=lastTen,error=error)
+        return render_template('home.html',latestBlock=latestBlock,lastTen=lastTen,lastUpdate=lastUpdate,error=error)
 
 
 @app.route('/alerts', methods=['GET','POST'])
