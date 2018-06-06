@@ -4,29 +4,6 @@
 
 
 <!--Lets make this shit -->
-<style>
-
-
-.tr {
-width: 100%;
-display: inline-table;
-height:60px;
-table-layout: auto;
-  
-}
-
-.table{
- height:300px; 
- display: -moz-groupbox;
-}
-.tbody{
-  overflow-y: scroll;
-  height: 200px;
-  width: 100%;
-  position: absolute;
-}
-
-</style>
 
 
 <div class="container"  overflow: auto>
@@ -51,8 +28,8 @@ table-layout: auto;
 			<th scope="col">Block</th>
 			<th scope="col">Key</th>
 			<th scope="col">Time</th>
-			<th scope="col">Date</th>
 			{#
+			<th scope="col">Date</th>
 			<th scope="col">Difficulty</th>
 			<th scope="col">Gas</th> 
 			#}
@@ -63,12 +40,14 @@ table-layout: auto;
 		<tr>
 			<td><a href="http://waltonchain.net/#/blockNumber?blockNumber={{line2.blockNum}}">{{line2.blockNum}}</a></td>
 			<td>{{line2.extra_data}}</td>
+			{#
 			<td>
-				{# this is conversion to local datetime #}
+				{# this is conversion to local datetime 
 				
 				{{ momentjs(line2.timest).fromNow() }}
-													
+								
 			</td>
+			#}
 			<td>
 				{# this is conversion to local datetime #}
 				{{ momentjs(line2.timest).calendar() }}
@@ -95,8 +74,9 @@ table-layout: auto;
 		<thead>
 			<tr>
 			<th scope="col">Key</th>
-			<th scope="col">Blocks</th>
-			
+			<th scope="col">Last Week</th>
+			<th scope="col">Last Month</th>
+			<th scope="col">All Time</th>
 		</tr>
 		</thead>
 		<tbody>
@@ -104,6 +84,8 @@ table-layout: auto;
 						<tr>
 						 
 								<td>{{line.extra_data}}</td>
+								<td>{{line.lastWeek}}</td>
+								<td>{{line.lastMonth}}</td>
 								<td>{{line.theCount}}</td>
 								
 						</tr>

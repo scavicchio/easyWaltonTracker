@@ -7,11 +7,17 @@
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 
 <link rel="stylesheet" type="text/css" href="styles.css">
 
 <script src="/static/js/moment.min.js"></script>
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+
 <style type="text/css">
+
 
 a {
   color: #2A5DB0;
@@ -20,6 +26,88 @@ a {
 
 </style>
 
+<style type="text/css">
+  
+h1 {
+  padding-top: 70px;
+}
+@media (max-width: 979px) {
+  h1 {
+    padding-top: 60px;
+  }
+}
+
+#About  {
+  padding-top: 70px;
+}
+@media (max-width: 979px) {
+  #About {
+    padding-top: 60px;
+  }
+}
+
+#FAQ  {
+  padding-top: 70px;
+}
+
+@media (max-width: 979px) {
+  #FAQ {
+    padding-top: 60px;
+  }
+}
+
+.jumbotron {
+  padding-top: -10px;
+}
+@media (max-width: 979px) {
+  .jumbotron {
+    padding-top: -20px;
+  }
+}
+
+
+
+#phone {display: block; }
+#phone {display: none;}
+
+@media screen and (max-width: 768px) {
+
+#desktop {display: none; }
+#phone {display: block; }
+}
+
+.table{
+ height:300px; 
+ display: -moz-groupbox;
+}
+.tbody{
+  overflow-y: scroll;
+  height: 200px;
+  width: 100%;
+  position: absolute;
+}
+
+.tr {
+width: 100%;
+display: inline-table;
+height:60px;
+table-layout: auto;
+  
+}
+
+.table{
+ height:300px; 
+ display: -moz-groupbox;
+}
+.tbody{
+  overflow-y: scroll;
+  height: 200px;
+  width: 100%;
+  position: absolute;
+}
+
+
+</style>
 
 <!-- Global site tag (gtag.js) - Google Analytics -->
 <head> 
@@ -46,22 +134,49 @@ margin-bottom: 20px;
   color: white;
 }
 
+.nav-item {
+  color: white;
+}
+
+.navbar-brand {
+  color: white;
+}
 </style>
 
-<!-- NAVBAR -->
-<nav id="navbar-example2" class="navbar sticky-top navbar-dark text-uppercase">
-  <a class="navbar-brand" href="/">Home</a>
-  <a class="navbar-brand" href="/#About">About</a>
-  <a class="navbar-brand" href="/#FAQ">FAQ</a>
-  <a class="navbar-brand" href="/howto">How To</a>
-  <a class="navbar-brand" href="/alerts">Alerts</a>
-  <ul class="nav nav-pills">
-    <li class="nav-item">
-      <a class="nav-link">Latest Block: {{latestBlock}}</a>
-    </li>
-  </ul>
+<nav class="navbar navbar-expand-md navbar-dark fixed-top">
+    <div class="container">
+        <a class="navbar-brand" href="/">Home</a>
+        
+   
+        <button id="nav-btn" class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarDiv" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+        <div class="collapse navbar-collapse" id="navbarDiv">
+            <ul class="navbar-nav mr-auto">
+              
+                <li class="nav-link">
+                    <a class="nav-link" href="/#About" data-toggle=s"collapse" data-target=".navbar-collapse.show">About</a>
+                </li>
+                <li class="nav-link">
+                    <a class="nav-link" href="/#FAQ" data-toggle=s"collapse" data-target=".navbar-collapse.show">FAQ</a>
+                </li>
+                <li class="nav-link">
+                    <a class="nav-link" href="/howto" data-toggle=s"collapse" data-target=".navbar-collapse.show">How To</a>
+                </li>
+                <li class="nav-link">
+                    <a class="nav-link" href="/alerts" data-toggle=s"collapse" data-target=".navbar-collapse.show">Alerts</a>
+                </li>
+            </ul>
+          <ul class="nav nav-pills">
+            <li class="nav-item">
+                   <a class="navbar-brand">Latest Block: {{latestBlock}}</a>
+            </li>
+          </ul>
+        </div>
+    </div>
 </nav>
 
+<h1></h1>
  {% block content %}{% endblock %}
 
 
@@ -126,7 +241,5 @@ color: black;
 </div>
 </div>
 </footer>
-
-
 </html>
 

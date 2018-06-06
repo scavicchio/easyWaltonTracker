@@ -24,7 +24,7 @@ border-bottom: 2px solid midnightblue;
 <div class="container">
 
 <div class="jumbotron"  >
-	<h1>Welcome to the Easy Walton Tracker! BETA </h1>
+	<h2>Welcome to the Easy Walton Tracker! BETA </h2>
 	<p>Search your wallet address below to get started</p>
 
 	<form action="/search" method="POST">
@@ -42,8 +42,51 @@ border-bottom: 2px solid midnightblue;
 
 <div id="Last10Blocks">
 	<h4>Demo of Last 10 Blocks</h4>
+</div>
 
-	<table class='height: 100px; max-width: 100%; table table-hover data-spy="scroll" overflow: auto table table-striped table-responsive ' style='margin-left: auto; margin-right: auto'>
+<div id="phone">
+	<table id = "phone-table" class='height: 100px; table-centered max-width: 100%; table table-responsive table-hover data-spy="scroll" overflow: ellipsis table table-striped table-responsive ' style='margin-left: auto; margin-right: auto'>
+		<thead>
+			<tr>
+			<th scope="col">Block</th>
+			<th scope="col">Wallet</th>
+			<th scope="col">Rig</th>
+			{#
+			<th scope="col">Difficulty (TH)</th>
+			
+			<th scope="col">Gas</th>
+			#}
+			<th scope="col">Time</th>
+		
+		</tr>
+		</thead>
+		<tbody>
+					{% for line in lastTen %}
+						<tr>
+								<td><a href="http://waltonchain.net/#/blockNumber?blockNumber={{line.blockNum}}">{{line.blockNum}}</a></td>
+								<td><a href="/miner/{{line.miner}}">{{line.miner | truncate(10, True) }}</a></td>
+								<td>{{line.extra_data}}</td>
+								{#
+								<td>{{line.difficulty}}</td>
+								
+								<td>{{line.gasUsed}}</td>
+								#}
+								<td>
+									{# this is conversion to local datetime #}
+									{{ momentjs(line.timest).fromNow() }}
+									
+        						</td>
+        						
+
+						</tr>
+					{% endfor %}
+			</tbody>
+
+	</table>
+</div>
+
+<div id="desktop">
+		<table id="desk-table" class='height: 100px; table-centered max-width: 100%; table table-responsive table-hover data-spy="scroll" overflow: ellipsis table table-striped table-responsive ' style='margin-left: auto; margin-right: auto'>
 		<thead>
 			<tr>
 			<th scope="col">Block</th>
@@ -54,15 +97,18 @@ border-bottom: 2px solid midnightblue;
 			<th scope="col">Gas</th>
 			#}
 			<th scope="col">Time</th>
+			{#
 			<th scope="col">Date</th>
+		#}
 		</tr>
 		</thead>
 		<tbody>
 					{% for line in lastTen %}
 						<tr>
 								<td><a href="http://waltonchain.net/#/blockNumber?blockNumber={{line.blockNum}}">{{line.blockNum}}</a></td>
-								<td><a href="/miner/{{line.miner}}">{{line.miner}}</a></td>
+								<td><a href="/miner/{{line.miner}}">{{line.miner }}</a></td>
 								<td>{{line.extra_data}}</td>
+								
 								<td>{{line.difficulty}}</td>
 								{#
 								<td>{{line.gasUsed}}</td>
@@ -72,13 +118,12 @@ border-bottom: 2px solid midnightblue;
 									{{ momentjs(line.timest).fromNow() }}
 									
         						</td>
-
+        						{#
         						<td>
-									{# this is conversion to local datetime #}
+									{# this is conversion to local datetime 
 									{{ momentjs(line.timest).calendar() }}
-									
         						</td>
-
+        						#}
 						</tr>
 					{% endfor %}
 			</tbody>
@@ -86,10 +131,16 @@ border-bottom: 2px solid midnightblue;
 	</table>
 </div>
 
+<style type="text/css">
+
+body {
+      position: relative; 
+}
+
+</style>
 
 
-
-<div data-spy="scroll" data-target="#navbar-example2" data-offset="0">
+<body data-spy="scroll" data-target=".navbar" data-offset="-50" id="scrollStuff">
 
   <h4 id="About">About</h4>
   <p>
@@ -127,9 +178,9 @@ border-bottom: 2px solid midnightblue;
 
 
 
-</div>
 </b1>
 </p>
+</body>
 </div>
 </div>
 

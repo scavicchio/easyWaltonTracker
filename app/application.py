@@ -95,7 +95,15 @@ def getRewardCountByExtra(conn,etherbase):
 
 def getLast7Days(conn,etherbase):
     cursor = conn.cursor()
-    query = 'SELECT COUNT(blockNum) AS theCount FROM BlockChain WHERE miner = %s AND timest >= DATE(NOW()) - INTERVAL 7 DAY GROUP BY extra_data'
+    query = 'SELECT extra_data, COUNT(blockNum) AS theCount FROM BlockChain WHERE miner = %s AND timest >= DATE(NOW()) - INTERVAL 7 DAY GROUP BY extra_data'
+    cursor.execute(query,(etherbase))
+    data = cursor.fetchall()
+    cursor.close()
+    return data
+
+def getLastMonth(conn,etherbase):
+    cursor = conn.cursor()
+    query = 'SELECT extra_data, COUNT(blockNum) AS theCount FROM BlockChain WHERE miner = %s AND timest >= DATE(NOW()) - INTERVAL 1 MONTH GROUP BY extra_data'
     cursor.execute(query,(etherbase))
     data = cursor.fetchall()
     cursor.close()
@@ -331,7 +339,6 @@ def emailRemove():
                 return render_template('alerts.html',latestBlock=latestBlock,error=message)
         
         return render_template('alerts.html',latestBlock=latestBlock)
-        
 
 # route for miner data page
 @app.route('/miner/<etherbase>',methods=['GET'])
