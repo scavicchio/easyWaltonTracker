@@ -95,7 +95,15 @@ def getRewardCount(conn,etherbase):
 # returns the number of rewards for each unique extraData as a pair.
 def getRewardCountByExtra(conn,etherbase):
     cursor = conn.cursor()
-    query = 'SELECT extra_data, COUNT(blockNum) AS theCount FROM BlockChain WHERE miner =%s GROUP BY extra_data ORDER BY theCount DESC'
+
+    query = 'SELECT extra_data, \
+           COUNT(blockNum) as theCount, \
+           SUM(case when timest >= CURRENT_DATE - 7 then 1 else 0 end) as lastWeek, \
+           SUM(case when timest >= CURRENT_DATE - 31 then 1 else 0 end) as lastMonth \
+      		FROM BlockChain \
+     		WHERE miner = %s \
+  			GROUP BY extra_data ORDER BY lastWeek DESC'
+
     cursor.execute(query,(etherbase))
     data = cursor.fetchall()
     cursor.close()
@@ -272,12 +280,22 @@ def homepage(error="None"):
 
 #about page
 @app.route('/about')
-def about():
-    conn = connect()
-    latestBlock = getLatestBlockFromDB(conn)
-    blockData = getLatestNBlocks(conn,10)
-    conn.close()
-    return render_template('about.html',latestBlock=latestBlock)
+def about1():
+    return redirect("/#About")
+
+#about page
+@app.route('/About')
+def about2():
+    return redirect("/#About")
+
+#howto page
+@app.route('/HowTo')
+def howto2():
+    return redirect("/howto")
+
+@app.route('/FAQ')
+def faq1():
+    return redirect("/#FAQ")
 
 # for homepage search bar
 @app.route('/search', methods=['GET','POST'])
@@ -291,6 +309,7 @@ def searchMiner():
         conn = connect()
         latestBlock = getLatestBlockFromDB(conn)
         lastTen = getLatestNBlocks(conn,10)
+        lastUpdate = getLastUpdateTime(conn)
         conn.close()
         error = "Please Enter a Valid Wallet Address"
         return render_template('home.html',latestBlock=latestBlock,lastTen=lastTen,lastUpdate=lastUpdate,error=error)
@@ -363,11 +382,12 @@ def miner(etherbase):
     #last7 = getLast7Days(conn,etherbase)
     lastFive = getLatestAllRewards(conn,etherbase)
     graphData = getGraphData(conn,etherbase)
-
-    #cloe the connection so data will refresh each page
+    lastUpdate = getLastUpdateTime(conn)
+    #close the connection so data will refresh each page
     conn.close()
 
-    return render_template('minerChart.html',lastFive=lastFive,latestBlock=latestBlock,data=data,etherbase=etherbase,graphData=graphData,blockCount=num,data3=data3)
+    return render_template('minerChart.html',lastFive=lastFive,lastUpdate=lastUpdate,latestBlock=latestBlock,data=data,etherbase=etherbase,graphData=graphData,blockCount=num,data3=data3)
+
 
 @app.route('/howto',methods=['GET'])
 def howto():
