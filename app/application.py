@@ -114,8 +114,8 @@ def getRewardCountByExtra(conn,etherbase):
 
     query = 'SELECT extra_data, \
            COUNT(blockNum) as theCount, \
-           SUM(case when timest >= CURRENT_DATE - 7 then 1 else 0 end) as lastWeek, \
-           SUM(case when timest >= CURRENT_DATE - 31 then 1 else 0 end) as lastMonth \
+           SUM(case when timest >= (DATE(NOW()) - INTERVAL 7 DAY) then 1 else 0 end) as lastWeek, \
+           SUM(case when timest >= (DATE(NOW()) - INTERVAL 1 MONTH) then 1 else 0 end) as lastMonth \
       		FROM BlockChain \
      		WHERE miner = %s \
   			GROUP BY extra_data ORDER BY lastWeek DESC'
