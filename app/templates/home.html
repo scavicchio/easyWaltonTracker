@@ -37,13 +37,16 @@ border-bottom: 2px solid midnightblue;
 </form>
 </div>
 
+<body data-spy="scroll" data-target=".navbar" data-offset="-50" id="scrollStuff">
 
 
 
-<div id="Last10Blocks">
+<div id="demoBlocks">
 	<h4>Demo of Last 10 Blocks</h4>
 	<b1> Last Updated: {{ momentjs(lastUpdate).fromNow() }}
 </div>
+
+
 
 <div id="phone">
 	<table id = "phone-table" class='height: 100px; table-centered max-width: 100%; table table-responsive table-hover data-spy="scroll" overflow: ellipsis table table-striped table-responsive ' style='margin-left: auto; margin-right: auto'>
@@ -142,7 +145,6 @@ body {
 </style>
 
 
-<body data-spy="scroll" data-target=".navbar" data-offset="-50" id="scrollStuff">
 
   <h4 id="About">About</h4>
   <p>

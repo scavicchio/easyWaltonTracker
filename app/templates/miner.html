@@ -15,21 +15,28 @@
 
 
 <div class="container">
+
   <div class="row">
-    <div class="col">
+
+    <div class="col-sm-7">
 
 <h3> All Mined Blocks </h3>
+
+
 <div id="lastFiveTable">
-<table class='height: 100px; table text-centered table-hover data-spy="scroll" overflow: auto table  table-striped table-sm table-responsive ' style='margin-left: auto; margin-right: auto'>
+	
+<table class=' table text-centered table-hover data-spy="scroll" overflow: auto table  table-striped table-sm table-responsive ' style='margin-left: auto; margin-right: auto'>
+
 
 	<thead>
 		<tr>
 			<th scope="col">Block</th>
 			<th scope="col">Key</th>
-			<th scope="col">Time</th>
+			<th scope="col">Difficulty (TH)</th>
+			<th scope="col">Time (local)</th>
 			{#
 			<th scope="col">Date</th>
-			<th scope="col">Difficulty</th>
+			
 			<th scope="col">Gas</th> 
 			#}
 		</tr>
@@ -43,17 +50,19 @@
 			<td>
 				{# this is conversion to local datetime 
 				
-				{{ momentjs(line2.timest).fromNow() }}
+				{{ momentjs(line2.timest).format('l, LT') }}
 								
 			</td>
 			#}
+			<td>{{line2.difficulty}}</td>
 			<td>
 				{# this is conversion to local datetime #}
-				{{ momentjs(line2.timest).calendar() }}
+				{{ momentjs(line2.timest).format('l, LT') }}
 			</td>
 
+			
+			
 			{#
-			<td>{{line2.difficulty}}</td>
 			<td>{{line2.gasUsed}}</td>
 			#}
 		</tr>
@@ -64,7 +73,8 @@
 </div>
  </div>
 
- <div class="col"> 
+
+ <div class="col-sm-5"> 
  	
 
 <div id="BlockRigTotal" style="overflow: scroll">
@@ -99,6 +109,19 @@
 </div>
 </div>
 </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 <div id="phone">
 <div class="container"  overflow: auto>

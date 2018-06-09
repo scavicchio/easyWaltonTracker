@@ -10,12 +10,14 @@
 
 
 #import Flask Library
-from flask import Flask, render_template, request, session, url_for, redirect
+from flask import Flask, render_template, request, session, url_for, redirect, Response
+from flask_paginate import Pagination, get_page_args
 from flask_bootstrap import Bootstrap
 import pymysql.cursors
 import re
 import smtplib
 from momentjs import momentjs
+import csv
 
 
 #Initialize the app from Flask
@@ -82,6 +84,20 @@ def getDataForMiner(conn, etherbase):
     data = cursor.fetchall()
     cursor.close()
     return data
+
+def getDataForMinerPaginated(conn, etherbase, perPage,page):
+    offset = (page-1)*perPage
+    cursor = conn.cursor()
+    query = 'SELECT * FROM BlockChain WHERE miner = %s ORDER BY blockNum DESC LIMIT %s OFFSET %s'
+    cursor.execute(query, (etherbase,perPage, offset))
+    data = cursor.fetchall()
+    cursor.close()
+
+    for x in data:
+      x['difficulty'] = float("{0:.2f}".format(x['difficulty']/difficultyHashMagnitude))
+
+    return data
+
 
 # gets the total blocks a miner has solved
 def getRewardCount(conn,etherbase):
@@ -161,6 +177,17 @@ def getLatestNBlocks(conn,index):
   cursor = conn.cursor()
   query = 'SELECT * FROM BlockChain ORDER BY timest DESC LIMIT %s'
   cursor.execute(query, (index))
+  data = cursor.fetchall()
+  for x in data:
+    x['difficulty'] = float("{0:.2f}".format(x['difficulty']/difficultyHashMagnitude))
+  cursor.close()
+  return data
+
+def getLatestNBlocksOffset(conn,perPage,page):
+  offset = (page-1)*perPage
+  cursor = conn.cursor()
+  query = 'SELECT * FROM BlockChain ORDER BY timest DESC LIMIT %s OFFSET %s'
+  cursor.execute(query, (perPage,offset))
   data = cursor.fetchall()
   for x in data:
     x['difficulty'] = float("{0:.2f}".format(x['difficulty']/difficultyHashMagnitude))
@@ -268,11 +295,18 @@ def sendSignupConfirmation(etherbase,email,extra):
 #Define route for homepage
 @app.route('/')
 def homepage(error="None"):
+    page, per_page, offset = get_page_args(page_parameter='page',
+                                           per_page_parameter='per_page')
+    per_page = 10
     conn = connect()
     latestBlock = getLatestBlockFromDB(conn)
     lastUpdate = getLastUpdateTime(conn)
-    lastTen = getLatestNBlocks(conn,10)
+    lastTen = getLatestNBlocksOffset(conn,per_page,page)
     conn.close()
+
+    #pagination = Pagination(page=page, per_page=per_page, total = int(latestBlock),
+    #                       css_framework='bootstrap4')
+
     if (error != "None"):
       return render_template('home.html',latestBlock=latestBlock,lastTen=lastTen,lastUpdate=lastUpdate,error=error)
 
@@ -312,7 +346,7 @@ def searchMiner():
         lastUpdate = getLastUpdateTime(conn)
         conn.close()
         error = "Please Enter a Valid Wallet Address"
-        return render_template('home.html',latestBlock=latestBlock,lastTen=lastTen,lastUpdate=lastUpdate,error=error)
+        return homepage(error)
 
 
 @app.route('/alerts', methods=['GET','POST'])
@@ -367,26 +401,53 @@ def emailRemove():
                 return render_template('alerts.html',latestBlock=latestBlock,error=message)
         
         return render_template('alerts.html',latestBlock=latestBlock)
-
+'''
 # route for miner data page
 @app.route('/miner/<etherbase>',methods=['GET'])
 def miner(etherbase):
+    page, per_page, offset = get_page_args(page_parameter='page',
+                                           per_page_parameter='per_page')
+    per_page = 10
     # always connect first 
     conn = connect()
 
     # get all the data for the template
     latestBlock = getLatestBlockFromDB(conn)
-    data = getDataForMiner(conn,etherbase)
+    #data = getDataForMinerPaginated(conn,etherbase,perPage)
     num = getRewardCount(conn,etherbase)
     data3 = getRewardCountByExtra(conn,etherbase)
     #last7 = getLast7Days(conn,etherbase)
-    lastFive = getLatestAllRewards(conn,etherbase)
-    graphData = getGraphData(conn,etherbase)
+    lastFive = getDataForMinerPaginated(conn,etherbase,per_page,page)
+    #graphData = getGraphData(conn,etherbase)
     lastUpdate = getLastUpdateTime(conn)
     #close the connection so data will refresh each page
     conn.close()
 
-    return render_template('minerChart.html',lastFive=lastFive,lastUpdate=lastUpdate,latestBlock=latestBlock,data=data,etherbase=etherbase,graphData=graphData,blockCount=num,data3=data3)
+    pagination = Pagination(page=page, per_page=per_page, total = num,
+                            css_framework='bootstrap4')
+
+
+    return render_template('miner.html',pagination=pagination,pagedBlocks="True",lastFive=lastFive,lastUpdate=lastUpdate,latestBlock=latestBlock,etherbase=etherbase,blockCount=num,data3=data3)
+'''
+@app.route('/miner/<etherbase>',methods=['GET'])
+def miner(etherbase):
+    
+    # always connect first 
+    conn = connect()
+
+    # get all the data for the template
+    latestBlock = getLatestBlockFromDB(conn)
+    #data = getDataForMinerPaginated(conn,etherbase,perPage)
+    num = getRewardCount(conn,etherbase)
+    data3 = getRewardCountByExtra(conn,etherbase)
+    #last7 = getLast7Days(conn,etherbase)
+    lastFive = getLatestAllRewards(conn,etherbase)
+    #graphData = getGraphData(conn,etherbase)
+    lastUpdate = getLastUpdateTime(conn)
+    #close the connection so data will refresh each page
+    conn.close()
+    
+    return render_template('miner.html',lastFive=lastFive,lastUpdate=lastUpdate,latestBlock=latestBlock,data=data,etherbase=etherbase,blockCount=num,data3=data3)
 
 
 @app.route('/howto',methods=['GET'])
@@ -397,7 +458,19 @@ def howto():
     
     return render_template('howto.html',latestBlock=latestBlock)
 
+@app.route("/downloadBlockCSV")
+def downloadBlockCSV():
+    # with open("outputs/Adjacency.csv") as fp:
+    #     csv = fp.read()
+    conn = connect()
+    cursor = conn.cursor()
+   # query = 'SELECT * INTO OUTFILE 'blockchain.csv' FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '"' LINES TERMINATED BY '\n' FROM BlockChain'
 
+    return Response(
+        csv,
+        mimetype="text/csv",
+        headers={"Content-disposition":
+                 "attachment; filename=myplot.csv"})
 
 if __name__ == "__main__":
         app.run('127.0.0.1', 5000, debug = True)
