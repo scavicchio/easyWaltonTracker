@@ -543,13 +543,13 @@ def extra(extra):
     #extra stuff
     stats = getExtraStats(conn,extra)
 
-    if (extra == 'Default Windows'):
+    if (extra == 'Windows'):
       warning = 'Will only display 100 recent results for Default'
       limit = 100
       data = getDataForExtraLimited(conn,extra,limit)
       return render_template('extra.html',warning=warning,latestBlock=latestBlock, lastUpdate=lastUpdate, data = data,extra=extra,total=total,stats=stats)
 
-    if (extra == 'Default Linux'):
+    if (extra == 'Linux'):
       warning = 'Will only display 100 recent results for Default'
       limit = 100
       data = getDataForExtraLimited(conn,extra,limit)
