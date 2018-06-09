@@ -88,10 +88,10 @@ def databaseData(blockNum):
 	#print(defaultWIN)
 	if (extra_data == defaultLINUX):
 		#print('default LIN found')
-		extra_data = "Default Linux"
+		extra_data = "Linux"
 	elif (extra_data == defaultWIN):
 		#print('default WIN found')
-		extra_data = "Default Windows"
+		extra_data = "Windows"
 	else:
 		try:
 			extra_data = bytearray.fromhex(extra_data).decode().strip()
