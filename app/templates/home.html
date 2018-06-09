@@ -39,7 +39,7 @@ color: red;
     </div>
 </form>
 <p2> NEW: You can now search by extra_data keys too! Try it out to see all the blocks a specific computer has gotten.</p2>
-	
+
 <form action="/searchExtra" method="POST">
 	<div class="input-group">
       <input type="text" class="form-control" name="extra" placeholder="Enter Extra Data"" aria-label="Search for...">
@@ -82,7 +82,8 @@ color: red;
 						<tr>
 								<td><a href="http://waltonchain.net/#/blockNumber?blockNumber={{line.blockNum}}">{{line.blockNum}}</a></td>
 								<td><a href="/miner/{{line.miner}}">{{line.miner | truncate(7, True) }}</a></td>
-								<td>{{line.extra_data | truncate(13, True) }}</td>
+								
+								<td><a href="/extra/{{line.extra_data}}">{{line.extra_data | truncate(13, True) }}</a></td>
 								{#
 								<td>{{line.difficulty}}</td>
 								
@@ -125,7 +126,7 @@ color: red;
 						<tr>
 								<td><a href="http://waltonchain.net/#/blockNumber?blockNumber={{line.blockNum}}">{{line.blockNum}}</a></td>
 								<td><a href="/miner/{{line.miner}}">{{line.miner }}</a></td>
-								<td>{{line.extra_data}}</td>
+								<td><a href="/extra/{{line.extra_data}}">{{line.extra_data}}</a></td>
 								
 								<td>{{line.difficulty}}</td>
 								{#
