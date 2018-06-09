@@ -114,8 +114,8 @@ def getRewardCountByExtra(conn,etherbase):
 
     query = 'SELECT extra_data, \
            COUNT(blockNum) as theCount, \
-           SUM(case when timest >= (DATE(NOW()) - INTERVAL 7 DAY) then 1 else 0 end) as lastWeek, \
-           SUM(case when timest >= (DATE(NOW()) - INTERVAL 1 MONTH) then 1 else 0 end) as lastMonth \
+           SUM(case when (timest >= DATE(NOW()) - INTERVAL 7 DAY) then 1 else 0 end) as lastWeek, \
+           SUM(case when (timest >= DATE(NOW()) - INTERVAL 1 MONTH) then 1 else 0 end) as lastMonth \
       		FROM BlockChain \
      		WHERE miner = %s \
   			GROUP BY extra_data ORDER BY lastWeek DESC'
@@ -331,8 +331,37 @@ def howto2():
 def faq1():
     return redirect("/#FAQ")
 
+def foundExtra(conn,extra):
+  cursor = conn.cursor()
+  query = 'SELECT COUNT(*) FROM BlockChain WHERE extra_data = %s LIMIT 1'
+  cursor.execute(query,(extra))
+  data = cursor.fetchone()["COUNT(*)"]
+  cursor.close()
+
+  if (data == 0):
+    return False
+
+  return True
+
+@app.route('/searchExtra',methods=['GET','POST'])
+def searchExtra():
+        extra = request.form.get('extra')
+        conn = connect()
+
+        if foundExtra(conn,extra):
+          returnUrl = 'extra/'+extra+''
+          return redirect(returnUrl)
+
+        
+        latestBlock = getLatestBlockFromDB(conn)
+        lastTen = getLatestNBlocks(conn,10)
+        lastUpdate = getLastUpdateTime(conn)
+        conn.close()
+        error = "Extra Data Key Not Found! (This means your computer has not mined a block yet.)"
+        return homepage(error)
+
 # for homepage search bar
-@app.route('/search', methods=['GET','POST'])
+@app.route('/searchMiner', methods=['GET','POST'])
 def searchMiner():
         etherbase = request.form.get('etherbase')
 
@@ -448,6 +477,90 @@ def miner(etherbase):
     conn.close()
     
     return render_template('miner.html',lastFive=lastFive,lastUpdate=lastUpdate,latestBlock=latestBlock,data=data,etherbase=etherbase,blockCount=num,data3=data3)
+
+def getDataForExtra(conn,extra):
+  cursor = conn.cursor()
+  query = 'SELECT * FROM BlockChain WHERE extra_data = %s ORDER BY blockNum DESC'
+  cursor.execute(query,(extra))
+  data = cursor.fetchall()
+  cursor.close()
+
+  for x in data:
+      x['difficulty'] = float("{0:.2f}".format(x['difficulty']/difficultyHashMagnitude))
+
+
+  return data
+
+def getDataForExtraLimited(conn,extra,limit):
+  cursor = conn.cursor()
+  query = 'SELECT * FROM BlockChain WHERE extra_data = %s ORDER BY blockNum DESC LIMIT %s'
+  cursor.execute(query,(extra,limit))
+  data = cursor.fetchall()
+  cursor.close()
+
+  for x in data:
+      x['difficulty'] = float("{0:.2f}".format(x['difficulty']/difficultyHashMagnitude))
+
+
+  return data
+
+def getTotalByExtra(conn,extra):
+  cursor = conn.cursor()
+  query = 'SELECT COUNT(*) FROM BlockChain WHERE extra_data = %s'
+  cursor.execute(query,(extra))
+  data = cursor.fetchone()
+  cursor.close()
+
+  return data["COUNT(*)"]
+
+def getExtraStats(conn,extra):
+  cursor = conn.cursor()
+
+  query = 'SELECT  \
+           COUNT(blockNum) as theCount, \
+           SUM(case when (timest >= DATE(NOW()) - INTERVAL 7 DAY) then 1 else 0 end) as lastWeek, \
+           SUM(case when (timest >= DATE(NOW()) - INTERVAL 1 MONTH) then 1 else 0 end) as lastMonth \
+          FROM BlockChain \
+          WHERE extra_data = %s \
+           ORDER BY lastWeek DESC'
+
+  cursor.execute(query,(extra))
+  data = cursor.fetchall()
+  cursor.close()
+
+  return data
+
+@app.route('/extra/<extra>',methods=['GET'])
+def extra(extra):
+    
+    # always connect first 
+    conn = connect()
+    #stuff for the template
+    latestBlock = getLatestBlockFromDB(conn)
+    lastUpdate = getLastUpdateTime(conn)
+    total = getTotalByExtra(conn,extra)
+
+    #extra stuff
+    stats = getExtraStats(conn,extra)
+
+    if (extra == 'Default Windows'):
+      warning = 'Will only display 100 recent results for Default'
+      limit = 100
+      data = getDataForExtraLimited(conn,extra,limit)
+      return render_template('extra.html',warning=warning,latestBlock=latestBlock, lastUpdate=lastUpdate, data = data,extra=extra,total=total,stats=stats)
+
+    if (extra == 'Default Linux'):
+      warning = 'Will only display 100 recent results for Default'
+      limit = 100
+      data = getDataForExtraLimited(conn,extra,limit)
+      return render_template('extra.html',warning=warning,latestBlock=latestBlock, lastUpdate=lastUpdate, data = data,extra=extra,total=total,stats=stats)
+
+    data = getDataForExtra(conn,extra)
+    
+
+    conn.close()
+    
+    return render_template('extra.html',latestBlock=latestBlock, lastUpdate=lastUpdate, data = data,extra=extra,total=total,stats=stats)
 
 
 @app.route('/howto',methods=['GET'])

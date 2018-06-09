@@ -8,6 +8,10 @@ h4 {
 border-bottom: 2px solid midnightblue;
 
 }
+
+p2 {
+color: red;
+}
 </style>
 
 
@@ -26,8 +30,7 @@ border-bottom: 2px solid midnightblue;
 <div class="jumbotron"  >
 	<h2>Welcome to the Easy Walton Tracker! BETA </h2>
 	<p>Search your wallet address below to get started</p>
-
-	<form action="/search" method="POST">
+	<form action="/searchMiner" method="POST">
 	<div class="input-group">
       <input type="text" class="form-control" name="etherbase" placeholder="Enter Wallet Address"" aria-label="Search for...">
       <span class="input-group-btn">
@@ -35,6 +38,16 @@ border-bottom: 2px solid midnightblue;
       </span>
     </div>
 </form>
+<p2> NEW: You can now search by extra_data keys too! Try it out to see all the blocks a specific computer has gotten.</p2>
+	
+<form action="/searchExtra" method="POST">
+	<div class="input-group">
+      <input type="text" class="form-control" name="extra" placeholder="Enter Extra Data"" aria-label="Search for...">
+      <span class="input-group-btn">
+        <input class="btn btn-primary btn-lg active" type="submit" role="intput" aria-pressed="true"></a>
+      </span>
+    </div>
+</form>	
 </div>
 
 <body data-spy="scroll" data-target=".navbar" data-offset="-50" id="scrollStuff">

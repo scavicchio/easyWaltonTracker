@@ -5,12 +5,19 @@
 
 <!--Lets make this shit -->
 
+{% if warning %}
+<div class="alert alert-warning alert-dismissible">
+  <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+  <strong>ERROR</strong> {{warning}}.
+</div>
+{% endif %}
+
 
 <div id="desktop">
 <div class="container"  overflow: auto>
 
-<h4>Etherbase: {{etherbase}} </h4>
-<h5>Total Blocks Mined: {{blockCount}} </h5>
+<h4>ExtraData: {{extra}} </h4>
+<h5>Total Blocks Mined: {{total}} </h5>
 <b1> Last Updated: {{ momentjs(lastUpdate).fromNow() }}
 
 
@@ -18,7 +25,7 @@
 
   <div class="row">
 
-    <div class="col-sm-7">
+    <div class="col-sm-9">
 
 <h3> All Mined Blocks </h3>
 
@@ -31,7 +38,7 @@
 	<thead>
 		<tr>
 			<th scope="col">Block</th>
-			<th scope="col">Key</th>
+			<th scope="col">Wallet</th>
 			<th scope="col">Difficulty (TH)</th>
 			<th scope="col">Time (local)</th>
 			{#
@@ -42,10 +49,10 @@
 		</tr>
 	</thead>
 	<tbody>
-		{% for line2 in lastFive %}
+		{% for line2 in data %}
 		<tr>
 			<td><a href="http://waltonchain.net/#/blockNumber?blockNumber={{line2.blockNum}}">{{line2.blockNum}}</a></td>
-			<td><a href="/extra/{{line2.extra_data}}">{{line2.extra_data}}</a></td>
+			<td><a href="/miner/{{line2.miner}}">{{line2.miner}}</a></td>
 			{#
 			<td>
 				{# this is conversion to local datetime 
@@ -74,26 +81,26 @@
  </div>
 
 
- <div class="col-sm-5"> 
+ <div class="col-sm-3"> 
  	
 
 <div id="BlockRigTotal" style="overflow: scroll">
 
-	<h3>Records by Key</h3>
+	<h3>Stats</h3>
 <table class='max-height:300px table text-centered table-hover data-spy="scroll" overflow: auto tabletable-striped table-sm table-responsive ' style='margin-left: auto; margin-right: auto'>
 		<thead>
 			<tr>
-			<th scope="col">Key</th>
+			{#<th scope="col">Key</th>#}
 			<th scope="col">Last Week</th>
 			<th scope="col">Last Month</th>
 			<th scope="col">All Time</th>
 		</tr>
 		</thead>
 		<tbody>
-					{% for line in data3 %}
+					{% for line in stats %}
 						<tr>
 						 
-								<td><a href="/extra/{{line.extra_data}}">{{line.extra_data}}</a></td>
+								{#<td>{{line.extra_data}}</td>#}
 								<td>{{line.lastWeek}}</td>
 								<td>{{line.lastMonth}}</td>
 								<td>{{line.theCount}}</td>
@@ -126,14 +133,62 @@
 <div id="phone">
 <div class="container"  overflow: auto>
 
-<h4>Etherbase: </h4> 
-<b1>{{etherbase}} </b1>
-<h5>Total Blocks Mined: {{blockCount}} </h5>
-<b1> Last Updated: {{ momentjs(lastUpdate).fromNow() }}
+<h4>ExtraData: {{extra}}</h4> 
 
+<b1>Total Blocks Mined: {{total}} </b1>
+<br/>
+<b1> Last Updated: {{ momentjs(lastUpdate).fromNow() }}
+<br/>
+<br/>
 <div class="container">
   <div class="row">
     <div class="col">
+
+<div id="BlockRigTotal" style="overflow: scroll">
+
+<style type="text/css">
+	
+.table{
+ height: 100%; 
+ display: -moz-groupbox;
+}
+
+</style>
+
+<h3>Stats</h3>
+<table class='max-height:100px table text-centered table-hover data-spy="scroll" overflow: auto tabletable-striped table-sm table-responsive ' style='margin-left: auto; margin-right: auto'>
+		<thead>
+			<tr>
+			{#<th scope="col">Key</th>#}
+			<th scope="col">Last Week</th>
+			<th scope="col">Last Month</th>
+			<th scope="col">All Time</th>
+		</tr>
+		</thead>
+		<tbody>
+					{% for line in stats %}
+						<tr>
+						 
+							{#<td>{{line.extra_data}}</td>#}
+								<td>{{line.lastWeek}}</td>
+								<td>{{line.lastMonth}}</td>
+								<td>{{line.theCount}}</td>
+								
+						</tr>
+					{% endfor %}
+			</tbody>
+
+</table>
+</div>
+
+
+ </div>
+</div>
+</div>
+
+ <div class="col"> 
+ 
+
 
 <h3> All Mined Blocks </h3>
 <div id="lastFiveTable">
@@ -142,7 +197,7 @@
 	<thead>
 		<tr>
 			<th scope="col">Block</th>
-			<th scope="col">Key</th>
+			<th scope="col">Wallet</th>
 			<th scope="col">Time</th>
 			{#
 			<th scope="col">Date</th>
@@ -152,21 +207,21 @@
 		</tr>
 	</thead>
 	<tbody>
-		{% for line2 in lastFive %}
+		{% for line2 in data %}
 		<tr>
 			<td><a href="http://waltonchain.net/#/blockNumber?blockNumber={{line2.blockNum}}">{{line2.blockNum}}</a></td>
-			<td><a href="/extra/{{line2.extra_data}}">{{line2.extra_data}}</a></td>
+			<td><a href="/miner/{{line2.miner}}">{{line2.miner | truncate(15, True) }}</a></td>
 			{#
 			<td>
 				{# this is conversion to local datetime 
 				
-				{{ momentjs(line2.timest).format('l, LT') }}
+				{{ momentjs(line2.timest).fromNow() }}
 								
 			</td>
 			#}
 			<td>
 				{# this is conversion to local datetime #}
-				{{ momentjs(line2.timest).format('l, LT') }}
+				{{ momentjs(line2.timest).calendar() }}
 			</td>
 
 			{#
@@ -179,38 +234,7 @@
 </table>
 
 </div>
- </div>
 
- <div class="col"> 
- 	
-
-<div id="BlockRigTotal" style="overflow: scroll">
-
-	<h3>Records by Key</h3>
-<table class='max-height:300px table text-centered table-hover data-spy="scroll" overflow: auto tabletable-striped table-sm table-responsive ' style='margin-left: auto; margin-right: auto'>
-		<thead>
-			<tr>
-			<th scope="col">Key</th>
-			<th scope="col">Last Week</th>
-			<th scope="col">Last Month</th>
-			<th scope="col">All Time</th>
-		</tr>
-		</thead>
-		<tbody>
-					{% for line in data3 %}
-						<tr>
-						 
-								<td><a href="/extra/{{line.extra_data}}">{{line.extra_data}}</a></td>
-								<td>{{line.lastWeek}}</td>
-								<td>{{line.lastMonth}}</td>
-								<td>{{line.theCount}}</td>
-								
-						</tr>
-					{% endfor %}
-			</tbody>
-
-</table>
-</div>
 </div>
 </div>
 </div>

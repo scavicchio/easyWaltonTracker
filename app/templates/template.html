@@ -74,6 +74,10 @@ h1 {
 
 #desktop {display: none; }
 #phone {display: block; }
+
+
+
+
 }
 
 .table{
@@ -95,10 +99,7 @@ table-layout: auto;
   
 }
 
-.table{
- 
- display: -moz-groupbox;
-}
+
 .tbody{
  
 
@@ -106,7 +107,18 @@ table-layout: auto;
   position: absolute;
 }
 
-
+@media (max-width: 979px) {
+.table{
+ height: 300px; 
+ display: -moz-groupbox;
+}
+.tbody{
+  overflow-y: scroll;
+  height: 300px;
+  width: 100%;
+  position: absolute;
+}
+}
 </style>
 
 <!-- Global site tag (gtag.js) - Google Analytics -->
