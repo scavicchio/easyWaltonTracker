@@ -458,6 +458,12 @@ def miner(etherbase):
 
     return render_template('miner.html',pagination=pagination,pagedBlocks="True",lastFive=lastFive,lastUpdate=lastUpdate,latestBlock=latestBlock,etherbase=etherbase,blockCount=num,data3=data3)
 '''
+def getMinerRank(conn,miner):
+	return
+
+def getExtraRank(conn,extra):
+	return
+
 @app.route('/miner/<etherbase>',methods=['GET'])
 def miner(etherbase):
     
@@ -584,6 +590,35 @@ def downloadBlockCSV():
         mimetype="text/csv",
         headers={"Content-disposition":
                  "attachment; filename=myplot.csv"})
+
+def getTopMiners(conn):
+	cursor = conn.cursor()
+	query = 'SELECT miner, Count(*) AS total FROM BlockChain GROUP BY miner ORDER BY total DESC LIMIT 15'
+	cursor.execute(query)
+	data = cursor.fetchall()
+	cursor.close()
+	return data
+
+def getTopRigs(conn):
+	cursor = conn.cursor()
+	query = 'SELECT extra_data, Count(*) AS total FROM BlockChain GROUP BY extra_data ORDER BY total DESC LIMIT 15'
+	cursor.execute(query)
+	data = cursor.fetchall()
+	cursor.close()
+	return data
+
+
+@app.route("/highscores")
+def highScores():
+	conn = connect() 
+	latestBlock = getLatestBlockFromDB(conn)
+	lastUpdate = getLastUpdateTime(conn)
+	topWallets = getTopMiners(conn)
+	topRigs = getTopRigs(conn)
+	conn.close()
+
+	return render_template('highscores.html',latestBlock = latestBlock, lastUpdate = lastUpdate, topWallets = topWallets, topRigs = topRigs)
+
 
 if __name__ == "__main__":
         app.run('127.0.0.1', 5000, debug = True)

@@ -1,0 +1,188 @@
+{% extends "template.html" %}
+{% block content %}
+
+
+
+<!--Lets make this shit -->
+<div>
+	<center>
+<h4>This page shows the top 15 earners by wallet and extra data.</h4>
+<b1> Last Updated: {{ momentjs(lastUpdate).fromNow() }}
+</center>
+</div>
+<div id="desktop">
+<div class="container"  overflow: auto>
+
+
+
+
+
+<div class="container">
+
+  <div class="row">
+
+    <div class="col-sm-7">
+
+<h3> Top Mining Wallets </h3>
+
+
+<div id="topWallets">
+	
+<table class=' table text-centered table-hover data-spy="scroll" overflow: auto table  table-striped table-sm table-responsive ' style='margin-left: auto; margin-right: auto'>
+
+
+	<thead>
+		<tr>
+			<th scope="col">Rank</th>
+			<th scope="col">Miner</th>
+			<th scope="col">Total Blocks</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for line in topWallets %}
+		<tr>
+			<td>{{loop.index}}</td>
+			<td><a href="/miner/{{line.miner}}">{{line.miner}}</a></td>
+			<td>{{line.total}}</td>
+		</tr>
+		{% endfor %}
+	</tbody>
+</table>
+
+</div>
+ </div>
+
+
+ <div class="col-sm-5"> 
+ 	
+
+<div id="topRigs" style="overflow: scroll">
+
+	<h3>Records by Key</h3>
+<table class='max-height:300px table text-centered table-hover data-spy="scroll" overflow: auto tabletable-striped table-sm table-responsive ' style='margin-left: auto; margin-right: auto'>
+		<thead>
+			<tr>
+			<th scope="col">Rank</th>
+			<th scope="col">Extra Data</th>
+			<th scope="col">Total</th>
+			</tr>
+		</thead>
+		<tbody>
+					{% for line in topRigs %}
+						<tr>
+							<td>{{loop.index}}</td>
+							<td><a href="/extra/{{line.extra_data}}">{{line.extra_data}}</a></td>
+							<td>{{line.total}}</td>
+						</tr>
+					{% endfor %}
+			</tbody>
+
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div id="phone">
+<div class="container"  overflow: auto>
+
+<div class="container">
+  <div class="row">
+    <div class="col">
+
+<h3> Top Mining Wallets </h3>
+
+
+<div id="topWallets">
+	
+<table class=' table text-centered table-hover data-spy="scroll" overflow: auto table  table-striped table-sm table-responsive ' style='margin-left: auto; margin-right: auto'>
+
+
+	<thead>
+		<tr>
+			<th scope="col">Rank</th>
+			<th scope="col">Miner</th>
+			<th scope="col">Total Blocks</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for line in topWallets %}
+		<tr>
+			<td>{{loop.index}}</td>
+			<td><a href="/miner/{{line.miner}}">{{line.miner | truncate(20, True) }}</a></td>
+			
+			<td>{{line.total}}</td>
+		</tr>
+		{% endfor %}
+	</tbody>
+</table>
+
+</div>
+ </div>
+
+ <div class="col"> 
+ 	
+
+<div id="topRigs" style="overflow: scroll">
+
+	<h3>Records by Key</h3>
+<table class='max-height:300px table text-centered table-hover data-spy="scroll" overflow: auto tabletable-striped table-sm table-responsive ' style='margin-left: auto; margin-right: auto'>
+		<thead>
+			<tr>
+			<th scope="col">Rank</th>
+			<th scope="col">Extra Data</th>
+			<th scope="col">Total</th>
+			</tr>
+		</thead>
+		<tbody>
+					{% for line in topRigs %}
+						<tr>
+							<td>{{loop.index}}</td>
+							<td><a href="/extra/{{line.extra_data}}">{{line.extra_data | truncate(20, True) }}</a></td>
+							
+							<td>{{line.total}}</td>
+						</tr>
+					{% endfor %}
+			</tbody>
+
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<center>
+<h4> Who are Windows and Linux and how did they get so many Blocks? </h4>
+<b1> "Windows" represents miners who have not set an extra data key to their mining rigs. </b1>
+<br/>
+<b1> "Linux" represents that one guy who got the mining client earlier than everyone else! </b1>
+<br/>
+<br/>
+<h4> How do some people have so many blocks? </h4>
+
+<b1> Unfortunately, some people have taken to "pooling" Guardian Masternode and Masternode wallets in order to gain more WTCT per block. 
+	This means that multiple people will mine to a GMN wallet address and expect to be paid back a portion of each block that they mine. For example, instead of recieveing 2 WTCT per block, a GMN will recieve 4 and will then split the extra 2 WTCT with the miner. 
+<br/>
+	We at Easy Walton Miner DO NOT reccommend or endorse these services due to the risky nature of trusting unknown third parties. Any requests to implement or otherise help with this kind of unofficial pool will not be responded to. 
+</b1>
+</center>
+
+
+{% endblock %}
+
