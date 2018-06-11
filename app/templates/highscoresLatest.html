@@ -1,1 +1,9 @@
+{% extends "highscores.html" %}
+{% block content %}
 
+<center>
+<h4>This page shows the top 15 earners by wallet and extra data.</h4>
+<b1> Last Updated: {{ momentjs(lastUpdate).fromNow() }}
+</center>
+
+{% endblock %}
