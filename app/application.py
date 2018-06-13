@@ -591,33 +591,52 @@ def downloadBlockCSV():
         headers={"Content-disposition":
                  "attachment; filename=myplot.csv"})
 
-def getTopMiners(conn):
+def getTopMiners(conn, limit):
 	cursor = conn.cursor()
-	query = 'SELECT miner, Count(*) AS total FROM BlockChain GROUP BY miner ORDER BY total DESC LIMIT 15'
-	cursor.execute(query)
+	query = 'SELECT miner, Count(*) AS total FROM BlockChain GROUP BY miner ORDER BY total DESC LIMIT %s'
+	cursor.execute(query,limit)
 	data = cursor.fetchall()
 	cursor.close()
 	return data
 
-def getTopRigs(conn):
+def getTopRigs(conn, limit):
 	cursor = conn.cursor()
-	query = 'SELECT extra_data, Count(*) AS total FROM BlockChain GROUP BY extra_data ORDER BY total DESC LIMIT 15'
-	cursor.execute(query)
+	query = 'SELECT extra_data, Count(*) AS total FROM BlockChain GROUP BY extra_data ORDER BY total DESC LIMIT %s'
+	cursor.execute(query,limit)
 	data = cursor.fetchall()
 	cursor.close()
 	return data
 
+def getTopMinersLatest(conn, limit, oldest):
+  cursor = conn.cursor()
+  query = 'SELECT miner, Count(*) AS total FROM BlockChain WHERE blockNum > %s GROUP BY miner ORDER BY total DESC LIMIT %s'
+  cursor.execute(query,(oldest,limit))
+  data = cursor.fetchall()
+  cursor.close()
+  return data
+
+def getTopRigsLatest(conn, limit,oldest):
+  cursor = conn.cursor()
+  query = 'SELECT extra_data, Count(*) AS total FROM BlockChain WHERE blockNum >= %s GROUP BY extra_data ORDER BY total DESC LIMIT %s'
+  cursor.execute(query,(oldest,limit))
+  data = cursor.fetchall()
+  cursor.close()
+  return data
 
 @app.route("/highscores")
 def highScores():
-	conn = connect() 
-	latestBlock = getLatestBlockFromDB(conn)
-	lastUpdate = getLastUpdateTime(conn)
-	topWallets = getTopMiners(conn)
-	topRigs = getTopRigs(conn)
-	conn.close()
+  conn = connect()
+  latestBlock = getLatestBlockFromDB(conn)
+  oldest = latestBlock - 10000
+  limit = 50
+  lastUpdate = getLastUpdateTime(conn)
+  topWallets = getTopMiners(conn,limit)
+  topRigs = getTopRigs(conn,limit)
+  topWalletsLatest = getTopMinersLatest(conn,limit,oldest)
+  topRigsLatest = getTopRigsLatest(conn,limit,oldest)
+  conn.close()
 
-	return render_template('highscores.html',latestBlock = latestBlock, lastUpdate = lastUpdate, topWallets = topWallets, topRigs = topRigs)
+  return render_template('highscores.html',latestBlock = latestBlock, lastUpdate = lastUpdate, topWallets = topWallets, topRigs = topRigs,topWalletsLatest = topWalletsLatest, topRigsLatest = topRigsLatest)
 
 
 if __name__ == "__main__":
