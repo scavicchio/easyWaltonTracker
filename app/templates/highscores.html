@@ -188,7 +188,7 @@ table-layout: auto;
 		{% for line in topWallets %}
 		<tr>
 			<td>{{loop.index}}</td>
-			<td><a href="/miner/{{line.miner}}">{{line.miner | truncate(20, True) }}</a></td>
+			<td><a href="/miner/{{line.miner}}">{{line.miner | truncate(15, True) }}</a></td>
 			
 			<td>{{line.total}}</td>
 		</tr>
@@ -217,7 +217,7 @@ table-layout: auto;
 					{% for line in topRigs %}
 						<tr>
 							<td>{{loop.index}}</td>
-							<td><a href="/extra/{{line.extra_data}}">{{line.extra_data | truncate(20, True) }}</a></td>
+							<td><a href="/extra/{{line.extra_data}}">{{line.extra_data | truncate(15, True) }}</a></td>
 							
 							<td>{{line.total}}</td>
 						</tr>
@@ -340,7 +340,7 @@ table-layout: auto;
 		{% for line in topWalletsLatest %}
 		<tr>
 			<td>{{loop.index}}</td>
-			<td><a href="/miner/{{line.miner}}">{{line.miner | truncate(20, True) }}</a></td>
+			<td><a href="/miner/{{line.miner}}">{{line.miner | truncate(15, True) }}</a></td>
 			
 			<td>{{line.total}}</td>
 		</tr>
@@ -369,7 +369,7 @@ table-layout: auto;
 					{% for line in topRigsLatest %}
 						<tr>
 							<td>{{loop.index}}</td>
-							<td><a href="/extra/{{line.extra_data}}">{{line.extra_data | truncate(20, True) }}</a></td>
+							<td><a href="/extra/{{line.extra_data}}">{{line.extra_data | truncate(15, True) }}</a></td>
 							
 							<td>{{line.total}}</td>
 						</tr>
