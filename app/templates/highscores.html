@@ -83,7 +83,9 @@ table-layout: auto;
 
 <div class="container"  overflow: auto>
 <div class="tab">
-  <button class="tablinks" onclick="openCity(event, 'Latest')" id="defaultOpen">Lastest 10k Blocks</button>
+  <button class="tablinks" onclick="openCity(event, 'Last 24H')" id="defaultOpen">Last 24 Hours</button>
+  <button class="tablinks" onclick="openCity(event, 'Week')">Last Week</button>
+  <button class="tablinks" onclick="openCity(event, 'Month')">Last Month</button>
   <button class="tablinks" onclick="openCity(event, 'All Time')">All Time</button>
 </div>
 
@@ -149,7 +151,7 @@ table-layout: auto;
 					{% for line in topRigs %}
 						<tr>
 							<td>{{loop.index}}</td>
-							<td><a href="/extra/{{line.extra_data}}">{{line.extra_data}}</a></td>
+							<td><a href="/extra/{{line.extra_data}}">{{line.extra_data  | truncate(30, True) }}</a></td>
 							<td>{{line.total}}</td>
 						</tr>
 					{% endfor %}
@@ -234,13 +236,9 @@ table-layout: auto;
 </div>
 
 
+{# FOR LAST 24H #}
 
-
-
-
-{# FOR LAST 10K  #}
-
-<div id="Latest" class="tabcontent">
+<div id="Last 24H" class="tabcontent">
 
 <div id="desktop">
 
@@ -269,7 +267,7 @@ table-layout: auto;
 		</tr>
 	</thead>
 	<tbody>
-		{% for line in topWalletsLatest %}
+		{% for line in topWallets24 %}
 		<tr>
 			<td>{{loop.index}}</td>
 			<td><a href="/miner/{{line.miner}}">{{line.miner}}</a></td>
@@ -298,10 +296,10 @@ table-layout: auto;
 			</tr>
 		</thead>
 		<tbody>
-					{% for line in topRigsLatest %}
+					{% for line in topRigs24 %}
 						<tr>
 							<td>{{loop.index}}</td>
-							<td><a href="/extra/{{line.extra_data}}">{{line.extra_data}}</a></td>
+							<td><a href="/extra/{{line.extra_data}}">{{line.extra_data | truncate(30, True) }}</a></td>
 							<td>{{line.total}}</td>
 						</tr>
 					{% endfor %}
@@ -337,7 +335,7 @@ table-layout: auto;
 		</tr>
 	</thead>
 	<tbody>
-		{% for line in topWalletsLatest %}
+		{% for line in topWallets24 %}
 		<tr>
 			<td>{{loop.index}}</td>
 			<td><a href="/miner/{{line.miner}}">{{line.miner | truncate(15, True) }}</a></td>
@@ -366,7 +364,7 @@ table-layout: auto;
 			</tr>
 		</thead>
 		<tbody>
-					{% for line in topRigsLatest %}
+					{% for line in topRigs24 %}
 						<tr>
 							<td>{{loop.index}}</td>
 							<td><a href="/extra/{{line.extra_data}}">{{line.extra_data | truncate(15, True) }}</a></td>
@@ -384,6 +382,326 @@ table-layout: auto;
 </div>
 </div>
 </div>
+
+
+{# FOR LAST WEEK  #}
+
+<div id="Week" class="tabcontent">
+
+<div id="desktop">
+
+<!--Lets make this shit -->
+
+<div class="container" overflow: auto>
+
+
+  <div class="row">
+
+    <div class="col-sm-7">
+
+<h3> Top Mining Wallets </h3>
+
+
+<div id="topWallets">
+	
+<table class=' table text-centered table-hover data-spy="scroll" overflow: auto table  table-striped table-sm table-responsive ' style='margin-left: auto; margin-right: auto'>
+
+
+	<thead>
+		<tr>
+			<th scope="col">Rank</th>
+			<th scope="col">Miner</th>
+			<th scope="col">Total Blocks</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for line in topWalletsWeek %}
+		<tr>
+			<td>{{loop.index}}</td>
+			<td><a href="/miner/{{line.miner}}">{{line.miner}}</a></td>
+			<td>{{line.total}}</td>
+		</tr>
+		{% endfor %}
+	</tbody>
+</table>
+
+</div>
+ </div>
+
+
+ <div class="col-sm-5"> 
+ 	
+
+<div id="topRigs" style="overflow: scroll">
+
+	<h3>Records by Key</h3>
+<table class='max-height:300px table text-centered table-hover data-spy="scroll" overflow: auto tabletable-striped table-sm table-responsive ' style='margin-left: auto; margin-right: auto'>
+		<thead>
+			<tr>
+			<th scope="col">Rank</th>
+			<th scope="col">Extra Data</th>
+			<th scope="col">Total</th>
+			</tr>
+		</thead>
+		<tbody>
+					{% for line in topRigsWeek %}
+						<tr>
+							<td>{{loop.index}}</td>
+							<td><a href="/extra/{{line.extra_data}}">{{line.extra_data | truncate(30, True) }}</a></td>
+							<td>{{line.total}}</td>
+						</tr>
+					{% endfor %}
+			</tbody>
+
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="phone">
+<div class="container"  overflow: auto>
+
+<div class="container">
+  <div class="row">
+    <div class="col">
+
+<h3> Top Mining Wallets </h3>
+
+
+<div id="topWallets">
+	
+<table class=' table text-centered table-hover data-spy="scroll" overflow: auto table  table-striped table-sm table-responsive ' style='margin-left: auto; margin-right: auto'>
+
+
+	<thead>
+		<tr>
+			<th scope="col">Rank</th>
+			<th scope="col">Miner</th>
+			<th scope="col">Total Blocks</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for line in topWalletsWeek %}
+		<tr>
+			<td>{{loop.index}}</td>
+			<td><a href="/miner/{{line.miner}}">{{line.miner | truncate(15, True) }}</a></td>
+			
+			<td>{{line.total}}</td>
+		</tr>
+		{% endfor %}
+	</tbody>
+</table>
+
+</div>
+ </div>
+
+ <div class="col"> 
+ 	
+
+<div id="topRigs" style="overflow: scroll">
+
+	<h3>Records by Key</h3>
+<table class='max-height:300px table text-centered table-hover data-spy="scroll" overflow: auto tabletable-striped table-sm table-responsive ' style='margin-left: auto; margin-right: auto'>
+		<thead>
+			<tr>
+			<th scope="col">Rank</th>
+			<th scope="col">Extra Data</th>
+			<th scope="col">Total</th>
+			</tr>
+		</thead>
+		<tbody>
+					{% for line in topRigsWeek %}
+						<tr>
+							<td>{{loop.index}}</td>
+							<td><a href="/extra/{{line.extra_data}}">{{line.extra_data | truncate(15, True) }}</a></td>
+							
+							<td>{{line.total}}</td>
+						</tr>
+					{% endfor %}
+			</tbody>
+
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+{# FOR LAST Month  #}
+
+<div id="Month" class="tabcontent">
+
+<div id="desktop">
+
+<!--Lets make this shit -->
+
+<div class="container" overflow: auto>
+
+
+  <div class="row">
+
+    <div class="col-sm-7">
+
+<h3> Top Mining Wallets </h3>
+
+
+<div id="topWallets">
+	
+<table class=' table text-centered table-hover data-spy="scroll" overflow: auto table  table-striped table-sm table-responsive ' style='margin-left: auto; margin-right: auto'>
+
+
+	<thead>
+		<tr>
+			<th scope="col">Rank</th>
+			<th scope="col">Miner</th>
+			<th scope="col">Total Blocks</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for line in topWalletsMonth %}
+		<tr>
+			<td>{{loop.index}}</td>
+			<td><a href="/miner/{{line.miner}}">{{line.miner}}</a></td>
+			<td>{{line.total}}</td>
+		</tr>
+		{% endfor %}
+	</tbody>
+</table>
+
+</div>
+ </div>
+
+
+ <div class="col-sm-5"> 
+ 	
+
+<div id="topRigs" style="overflow: scroll">
+
+	<h3>Records by Key</h3>
+<table class='max-height:300px table text-centered table-hover data-spy="scroll" overflow: auto tabletable-striped table-sm table-responsive ' style='margin-left: auto; margin-right: auto'>
+		<thead>
+			<tr>
+			<th scope="col">Rank</th>
+			<th scope="col">Extra Data</th>
+			<th scope="col">Total</th>
+			</tr>
+		</thead>
+		<tbody>
+					{% for line in topRigsMonth %}
+						<tr>
+							<td>{{loop.index}}</td>
+							<td><a href="/extra/{{line.extra_data}}">{{line.extra_data  | truncate(30, True) }}</a></td>
+							<td>{{line.total}}</td>
+						</tr>
+					{% endfor %}
+			</tbody>
+
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="phone">
+<div class="container"  overflow: auto>
+
+<div class="container">
+  <div class="row">
+    <div class="col">
+
+<h3> Top Mining Wallets </h3>
+
+
+<div id="topWallets">
+	
+<table class=' table text-centered table-hover data-spy="scroll" overflow: auto table  table-striped table-sm table-responsive ' style='margin-left: auto; margin-right: auto'>
+
+
+	<thead>
+		<tr>
+			<th scope="col">Rank</th>
+			<th scope="col">Miner</th>
+			<th scope="col">Total Blocks</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for line in topWalletsMonth %}
+		<tr>
+			<td>{{loop.index}}</td>
+			<td><a href="/miner/{{line.miner}}">{{line.miner | truncate(15, True) }}</a></td>
+			
+			<td>{{line.total}}</td>
+		</tr>
+		{% endfor %}
+	</tbody>
+</table>
+
+</div>
+ </div>
+
+ <div class="col"> 
+ 	
+
+<div id="topRigs" style="overflow: scroll">
+
+	<h3>Records by Key</h3>
+<table class='max-height:300px table text-centered table-hover data-spy="scroll" overflow: auto tabletable-striped table-sm table-responsive ' style='margin-left: auto; margin-right: auto'>
+		<thead>
+			<tr>
+			<th scope="col">Rank</th>
+			<th scope="col">Extra Data</th>
+			<th scope="col">Total</th>
+			</tr>
+		</thead>
+		<tbody>
+					{% for line in topRigsMonth %}
+						<tr>
+							<td>{{loop.index}}</td>
+							<td><a href="/extra/{{line.extra_data}}">{{line.extra_data | truncate(15, True) }}</a></td>
+							
+							<td>{{line.total}}</td>
+						</tr>
+					{% endfor %}
+			</tbody>
+
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 <br/>

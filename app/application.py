@@ -464,7 +464,7 @@ def getMinerRank(conn,miner):
 def getExtraRank(conn,extra):
 	return
 
-@app.route('/miner/<etherbase>',methods=['GET'])
+@app.route('/miner/<path:etherbase>',methods=['GET'])
 def miner(etherbase):
     
     # always connect first 
@@ -536,7 +536,7 @@ def getExtraStats(conn,extra):
 
   return data
 
-@app.route('/extra/<extra>',methods=['GET'])
+@app.route('/extra/<path:extra>',methods=['GET'])
 def extra(extra):
     
     # always connect first 
@@ -609,7 +609,7 @@ def getTopRigs(conn, limit):
 
 def getTopMinersLatest(conn, limit, oldest):
   cursor = conn.cursor()
-  query = 'SELECT miner, Count(*) AS total FROM BlockChain WHERE blockNum > %s GROUP BY miner ORDER BY total DESC LIMIT %s'
+  query = 'SELECT miner, Count(*) AS total FROM BlockChain WHERE (timest >= DATE(NOW()) - INTERVAL %s DAY) GROUP BY miner ORDER BY total DESC LIMIT %s'
   cursor.execute(query,(oldest,limit))
   data = cursor.fetchall()
   cursor.close()
@@ -617,7 +617,7 @@ def getTopMinersLatest(conn, limit, oldest):
 
 def getTopRigsLatest(conn, limit,oldest):
   cursor = conn.cursor()
-  query = 'SELECT extra_data, Count(*) AS total FROM BlockChain WHERE blockNum >= %s GROUP BY extra_data ORDER BY total DESC LIMIT %s'
+  query = 'SELECT extra_data, Count(*) AS total FROM BlockChain WHERE (timest >= DATE(NOW()) - INTERVAL %s DAY) GROUP BY extra_data ORDER BY total DESC LIMIT %s'
   cursor.execute(query,(oldest,limit))
   data = cursor.fetchall()
   cursor.close()
@@ -627,16 +627,22 @@ def getTopRigsLatest(conn, limit,oldest):
 def highScores():
   conn = connect()
   latestBlock = getLatestBlockFromDB(conn)
-  oldest = latestBlock - 10000
+  day = 1
+  week = 7
+  month = 31
   limit = 50
   lastUpdate = getLastUpdateTime(conn)
   topWallets = getTopMiners(conn,limit)
   topRigs = getTopRigs(conn,limit)
-  topWalletsLatest = getTopMinersLatest(conn,limit,oldest)
-  topRigsLatest = getTopRigsLatest(conn,limit,oldest)
+  topWallets24 = getTopMinersLatest(conn,limit,day)
+  topRigs24 = getTopRigsLatest(conn,limit,day)
+  topWalletsWeek = getTopMinersLatest(conn,limit,week)
+  topRigsWeek = getTopRigsLatest(conn,limit,week)
+  topWalletsMonth = getTopMinersLatest(conn,limit,month)
+  topRigsMonth = getTopRigsLatest(conn,limit,month)
   conn.close()
 
-  return render_template('highscores.html',latestBlock = latestBlock, lastUpdate = lastUpdate, topWallets = topWallets, topRigs = topRigs,topWalletsLatest = topWalletsLatest, topRigsLatest = topRigsLatest)
+  return render_template('highscores.html',latestBlock = latestBlock, lastUpdate = lastUpdate, topWallets = topWallets, topRigs = topRigs,topWallets24 = topWallets24, topRigs24 = topRigs24,topWalletsWeek = topWalletsWeek, topRigsWeek = topRigsWeek,topWalletsMonth = topWalletsMonth, topRigsMonth = topRigsMonth)
 
 
 if __name__ == "__main__":
