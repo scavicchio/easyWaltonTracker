@@ -81,28 +81,21 @@ def getBlockData(blockNum):
 def databaseData(blockNum):
 	data = getBlockData(blockNum)
 
-	difficulty = data["difficulty"]
-	miner = data["miner"]
-	extra_data = data["extraData"][2:]
-	#print(defaultLINUX)
-	#print(defaultWIN)
-	if (extra_data == defaultLINUX):
+	if (data["extraData"][2:] == defaultLINUX):
 		#print('default LIN found')
-		extra_data = "Linux"
-	elif (extra_data == defaultWIN):
+		data["extraData"][2:] = "Linux"
+	elif (data["extraData"][2:] == defaultWIN):
 		#print('default WIN found')
-		extra_data = "Windows"
+		data["extraData"][2:] = "Windows"
 	else:
 		try:
 			extra_data = bytearray.fromhex(extra_data).decode().strip()
 		except ValueError:
 			print("Found error decoding extra data, will insert original.")
 
-	timest = data["timestamp"]
-	timest = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(int(timest)))
-	gas = data["gasUsed"]
+	data["timestamp"] = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(int(timest)))
 
-	return miner,extra_data,difficulty,timest,gas
+	return data
 
 # all string
 #def printDictDataTypes(dictionary):
@@ -112,11 +105,7 @@ def databaseData(blockNum):
 #adding data to the SQL database in the BlockChain table
 def insertToDatabase(blockNum):
 	data = databaseData(blockNum)
-	miner = data[0]
-	extra = data[1]
-	difficulty = data[2]
-	timest = data[3]
-	gas = data[4]
+	
 	cursor = conn.cursor()
 	# needs to be order: block, miner, extra, difficulty, tiemstamp, gas
 	query = 'INSERT INTO BlockChain VALUES(%s, %s, %s, %s, %s, %s)'
