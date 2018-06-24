@@ -45,7 +45,7 @@
 		{% for line2 in lastFive %}
 		<tr>
 			<td><a href="http://waltonchain.net/#/blockNumber?blockNumber={{line2.blockNum}}">{{line2.blockNum}}</a></td>
-			<td><a href="/extra/{{line2.extra_data}}">{{line2.extra_data}}</a></td>
+			<td><a href="/extra/{{line2.extra_data}}">{{line2.extra_data }}</a></td>
 			{#
 			<td>
 				{# this is conversion to local datetime 
@@ -93,11 +93,11 @@
 					{% for line in data3 %}
 						<tr>
 						 
-								<td><a href="/extra/{{line.extra_data}}">{{line.extra_data}}</a></td>
+								<td><a href="/extra/{{line.extra_data}}">{{ line.extra_data | truncate(15, True) }}</a></td>
 								<td>{{line.lastWeek}}</td>
 								<td>{{line.lastMonth}}</td>
 								<td>{{line.theCount}}</td>
-								
+								 
 						</tr>
 					{% endfor %}
 			</tbody>
