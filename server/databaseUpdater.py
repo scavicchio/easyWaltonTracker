@@ -124,7 +124,7 @@ def insertToDatabase(blockNum):
 		except ValueError:
 			print("Found error decoding extra data, will insert original.")
 
-	timest = time.strftime('%Y-%m-%d %H:%M:%S')
+	timest = time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(int(timest)))
 
 	cursor = conn.cursor()
 	# needs to be order: block, miner, extra, difficulty, tiemstamp, gas
