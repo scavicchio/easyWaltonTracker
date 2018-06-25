@@ -66,8 +66,11 @@ def getRawBlockData(blockNum):
 		return data
 
 def getRawTransactionData(transaction):
-		blockString = str(transaction)
-		p = subprocess.Popen("\""+defaultWalletPath+"walton.exe\" attach http://127.0.0.1:8545 --exec eth.getTransaction("+blockString+")", shell=True, stdout=subprocess.PIPE)
+		blockString = "'"+transaction+"'"
+		#print(blockString)
+		command = "\""+defaultWalletPath+"walton.exe\" attach http://127.0.0.1:8545 --exec eth.getTransaction("+blockString+")"
+		#print(command)
+		p = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
 		#p.wait()
 		data = p.communicate()[0].decode()
 		return data
@@ -111,6 +114,7 @@ def insertToDatabase(blockNum):
 	hasher = data['hash']
 	totaldifficulty = data['totalDifficulty']
 	nonce = data['nonce']   
+	transactions = data['transactions']
 
 	if (extra == defaultLINUX):
 		#print('default LIN found')
@@ -132,7 +136,44 @@ def insertToDatabase(blockNum):
 	cursor.execute(query, (blockNum, miner, extra, difficulty, timest, gas,hasher,totaldifficulty,nonce))
 	conn.commit()
 	cursor.close()
+
+	if (transactions != '[]'):
+		transactions = transactions.strip('[').strip(']')
+		transactions = transactions.split(',')
+		#print(transactions)
+		#print(type(transactions))
+		for x in transactions:
+			x = x.strip('"')
+		#	print(x)
+		#	print(type(x))
+		#	print(1)
+			insertTransaction(x,blockNum,timest)
+			print("	     " + x)
+
+	
+
 	return
+
+
+def insertTransaction(transaction,blockNum,timest):
+	data = getTransactionData(transaction)
+	#print(data)
+	blockHash = data['blockHash']
+	sender = data['from']
+	reciever = data['to']
+	gas = data['gas']
+	transactionHash = data["hash"]
+	inputData = data['input']
+	r = data['r']
+	s = data['s']
+	value = data['value']
+
+	cursor = conn.cursor()
+	# needs to be order: block, miner, extra, difficulty, tiemstamp, gas
+	query = 'INSERT INTO transaction VALUES(%s, %s, %s, %s, %s, %s,%s,%s,%s,%s,%s)'
+	cursor.execute(query, (blockNum,blockHash,sender,reciever,gas,transactionHash,inputData,r,s,value,timest))
+	conn.commit()
+	cursor.close()
 
 def getLatestBlockFromDB():
 	cursor = conn.cursor()
