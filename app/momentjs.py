@@ -4,8 +4,8 @@ from datetime import datetime, timedelta
 class momentjs(object):
     def __init__(self, timestamp):
         # need to adjust for database being in EST
-        self.timestamp = timestamp+timedelta(hours=4)
-
+      #  self.timestamp = timestamp+timedelta(hours=4)
+        self.timestamp = timestamp
 
     def render(self, format):
         return Markup(
