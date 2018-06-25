@@ -142,6 +142,7 @@ def insertToDatabase(blockNum):
 		transactions = transactions.split(',')
 		#print(transactions)
 		#print(type(transactions))
+		print("looping")
 		for x in transactions:
 			x = x.strip('"')
 		#	print(x)
@@ -161,12 +162,12 @@ def insertTransaction(transaction,blockNum,timest):
 	blockHash = data['blockHash']
 	sender = data['from']
 	reciever = data['to']
-	gas = data['gas']
+	gas = data['gasPrice']
 	transactionHash = data["hash"]
 	inputData = data['input']
 	r = data['r']
 	s = data['s']
-	value = data['value']
+	value = float(float(data['value'])/float((10**18)))
 
 	cursor = conn.cursor()
 	# needs to be order: block, miner, extra, difficulty, tiemstamp, gas
