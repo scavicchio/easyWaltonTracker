@@ -468,24 +468,38 @@ def getExtraRank(conn,extra):
 	return
 
 @app.route('/miner/<path:etherbase>',methods=['GET'])
-def miner(etherbase):
-    
+@app.route('/miner/<path:etherbase>/', defaults={'page': 1},methods=['GET'])
+@app.route('/miner/<path:etherbase>/<int:page>',methods=['GET'])
+def miner(etherbase,page=1):
+    perPage = 10;
     # always connect first 
     conn = connect()
 
     # get all the data for the template
     latestBlock = getLatestBlockFromDB(conn)
-    #data = getDataForMinerPaginated(conn,etherbase,perPage)
+    #data = getLatestAllRewards(conn,etherbase)
     num = getRewardCount(conn,etherbase)
     data3 = getRewardCountByExtra(conn,etherbase)
     #last7 = getLast7Days(conn,etherbase)
-    lastFive = getLatestAllRewards(conn,etherbase)
+    lastFive = getDataForMinerPaginated(conn,etherbase,perPage,page)
     #graphData = getGraphData(conn,etherbase)
     lastUpdate = getLastUpdateTime(conn)
     #close the connection so data will refresh each page
     conn.close()
-    
-    return render_template('miner.html',lastFive=lastFive,lastUpdate=lastUpdate,latestBlock=latestBlock,data=data,etherbase=etherbase,blockCount=num,data3=data3)
+
+    nextURL = '/miner/'+etherbase+'/'+str(page+1)
+    if (page>=2):
+      previous = '/miner/'+etherbase+'/'+str(page-1)
+      return render_template('miner.html',page=page,prev_url=previous,next_url=nextURL,lastFive=lastFive,lastUpdate=lastUpdate,latestBlock=latestBlock,data=data,etherbase=etherbase,blockCount=num,data3=data3)
+
+
+    return render_template('miner.html',page=page,next_url=nextURL,lastFive=lastFive,lastUpdate=lastUpdate,latestBlock=latestBlock,data=data,etherbase=etherbase,blockCount=num,data3=data3)
+
+def url_for_other_page(page):
+    args = request.view_args.copy()
+    args['page'] = page
+    return url_for(request.endpoint, **args)
+app.jinja_env.globals['url_for_other_page'] = url_for_other_page
 
 def getDataForExtra(conn,extra):
   cursor = conn.cursor()
