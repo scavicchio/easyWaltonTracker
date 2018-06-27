@@ -62,7 +62,7 @@ conn = connect()
 # gets the most recent block that the DB has data for  
 def getLatestBlockFromDB(conn):    
     cursor = conn.cursor()
-    query = 'SELECT blockNum FROM BlockChain ORDER BY blockNum DESC LIMIT 1'
+    query = 'SELECT blockNum FROM blockchain ORDER BY blockNum DESC LIMIT 1'
     cursor.execute(query)
     latestBlock = cursor.fetchone()
     cursor.close()
@@ -70,7 +70,7 @@ def getLatestBlockFromDB(conn):
 
 def getLastUpdateTime(conn):    
     cursor = conn.cursor()
-    query = 'SELECT timest FROM BlockChain ORDER BY blockNum DESC LIMIT 1'
+    query = 'SELECT timest FROM blockchain ORDER BY blockNum DESC LIMIT 1'
     cursor.execute(query)
     latestBlock = cursor.fetchone()
     cursor.close()
@@ -79,7 +79,7 @@ def getLastUpdateTime(conn):
 # gets all data for a specific etherbase
 def getDataForMiner(conn, etherbase):
     cursor = conn.cursor()
-    query = 'SELECT * FROM BlockChain WHERE miner = %s'
+    query = 'SELECT * FROM blockchain WHERE miner = %s'
     cursor.execute(query, (etherbase))
     data = cursor.fetchall()
     cursor.close()
@@ -88,7 +88,7 @@ def getDataForMiner(conn, etherbase):
 def getDataForMinerPaginated(conn, etherbase, perPage,page):
     offset = (page-1)*perPage
     cursor = conn.cursor()
-    query = 'SELECT * FROM BlockChain WHERE miner = %s ORDER BY blockNum DESC LIMIT %s OFFSET %s'
+    query = 'SELECT * FROM blockchain WHERE miner = %s ORDER BY blockNum DESC LIMIT %s OFFSET %s'
     cursor.execute(query, (etherbase,perPage, offset))
     data = cursor.fetchall()
     cursor.close()
@@ -102,7 +102,7 @@ def getDataForMinerPaginated(conn, etherbase, perPage,page):
 # gets the total blocks a miner has solved
 def getRewardCount(conn,etherbase):
     cursor = conn.cursor()
-    query = 'SELECT COUNT(*) FROM BlockChain WHERE miner = %s'
+    query = 'SELECT COUNT(*) FROM blockchain WHERE miner = %s'
     cursor.execute(query, (etherbase))
     data = cursor.fetchone()
     cursor.close()
@@ -116,7 +116,7 @@ def getRewardCountByExtra(conn,etherbase):
            COUNT(blockNum) as theCount, \
            SUM(case when (timest >= DATE(NOW()) - INTERVAL 7 DAY) then 1 else 0 end) as lastWeek, \
            SUM(case when (timest >= DATE(NOW()) - INTERVAL 1 MONTH) then 1 else 0 end) as lastMonth \
-      		FROM BlockChain \
+      		FROM blockchain \
      		WHERE miner = %s \
   			GROUP BY extra_data ORDER BY lastWeek DESC'
 
@@ -127,7 +127,7 @@ def getRewardCountByExtra(conn,etherbase):
 
 def getLast7Days(conn,etherbase):
     cursor = conn.cursor()
-    query = 'SELECT extra_data, COUNT(blockNum) AS theCount FROM BlockChain WHERE miner = %s AND timest >= DATE(NOW()) - INTERVAL 7 DAY GROUP BY extra_data'
+    query = 'SELECT extra_data, COUNT(blockNum) AS theCount FROM blockchain WHERE miner = %s AND timest >= DATE(NOW()) - INTERVAL 7 DAY GROUP BY extra_data'
     cursor.execute(query,(etherbase))
     data = cursor.fetchall()
     cursor.close()
@@ -135,7 +135,7 @@ def getLast7Days(conn,etherbase):
 
 def getLastMonth(conn,etherbase):
     cursor = conn.cursor()
-    query = 'SELECT extra_data, COUNT(blockNum) AS theCount FROM BlockChain WHERE miner = %s AND timest >= DATE(NOW()) - INTERVAL 1 MONTH GROUP BY extra_data'
+    query = 'SELECT extra_data, COUNT(blockNum) AS theCount FROM blockchain WHERE miner = %s AND timest >= DATE(NOW()) - INTERVAL 1 MONTH GROUP BY extra_data'
     cursor.execute(query,(etherbase))
     data = cursor.fetchall()
     cursor.close()
@@ -144,7 +144,7 @@ def getLastMonth(conn,etherbase):
 # reurns all info from latest X rewards for a given address
 def getLatestNRewards(conn,etherbase,index):
   cursor = conn.cursor()
-  query = 'SELECT * FROM BlockChain WHERE miner = %s ORDER BY blockNum DESC LIMIT %s'
+  query = 'SELECT * FROM blockchain WHERE miner = %s ORDER BY blockNum DESC LIMIT %s'
   cursor.execute(query, (etherbase,index))
   data = cursor.fetchall()
   for x in data:
@@ -154,7 +154,7 @@ def getLatestNRewards(conn,etherbase,index):
 
 def getLatestAllRewards(conn,etherbase):
   cursor = conn.cursor()
-  query = 'SELECT * FROM BlockChain WHERE miner = %s ORDER BY blockNum DESC'
+  query = 'SELECT * FROM blockchain WHERE miner = %s ORDER BY blockNum DESC'
   cursor.execute(query, (etherbase))
   data = cursor.fetchall()
   for x in data:
@@ -166,7 +166,7 @@ def getLatestAllRewards(conn,etherbase):
 #gets all blocks, timest and extra for a JS graph for later
 def getGraphData(conn,etherbase):
   cursor = conn.cursor()
-  query = 'SELECT blockNum, extra_data, timest FROM BlockChain WHERE miner = %s ORDER BY timest ASC'
+  query = 'SELECT blockNum, extra_data, timest FROM blockchain WHERE miner = %s ORDER BY timest ASC'
   cursor.execute(query, (etherbase))
   data = cursor.fetchall()
   cursor.close()
@@ -175,7 +175,7 @@ def getGraphData(conn,etherbase):
 #gets most recent N blocks, data, and time for homepage
 def getLatestNBlocks(conn,index):
   cursor = conn.cursor()
-  query = 'SELECT * FROM BlockChain ORDER BY timest DESC LIMIT %s'
+  query = 'SELECT * FROM blockchain ORDER BY timest DESC LIMIT %s'
   cursor.execute(query, (index))
   data = cursor.fetchall()
   for x in data:
@@ -186,7 +186,7 @@ def getLatestNBlocks(conn,index):
 def getLatestNBlocksOffset(conn,perPage,page):
   offset = (page-1)*perPage
   cursor = conn.cursor()
-  query = 'SELECT * FROM BlockChain ORDER BY timest DESC LIMIT %s OFFSET %s'
+  query = 'SELECT * FROM blockchain ORDER BY timest DESC LIMIT %s OFFSET %s'
   cursor.execute(query, (perPage,offset))
   data = cursor.fetchall()
   for x in data:
@@ -313,14 +313,17 @@ def homepage(error="None"):
     return render_template('home.html',latestBlock=latestBlock,lastUpdate=lastUpdate,lastTen=lastTen)
 
 #about page
-@app.route('/about')
-def about1():
-    return redirect("/#About")
+#@app.route('/about')
+#def about1():
+#    return redirect("/#About")
 
 #about page
 @app.route('/About')
-def about2():
-    return redirect("/#About")
+def about():
+    conn = connect()
+    latestBlock = getLatestBlockFromDB(conn)
+    conn.close()
+    return render_template('about.html',latestBlock=latestBlock)
 
 #howto page
 @app.route('/HowTo')
@@ -333,7 +336,7 @@ def faq1():
 
 def foundExtra(conn,extra):
   cursor = conn.cursor()
-  query = 'SELECT COUNT(*) FROM BlockChain WHERE extra_data = %s LIMIT 1'
+  query = 'SELECT COUNT(*) FROM blockchain WHERE extra_data = %s LIMIT 1'
   cursor.execute(query,(extra))
   data = cursor.fetchone()["COUNT(*)"]
   cursor.close()
@@ -465,28 +468,42 @@ def getExtraRank(conn,extra):
 	return
 
 @app.route('/miner/<path:etherbase>',methods=['GET'])
-def miner(etherbase):
-    
+@app.route('/miner/<path:etherbase>/', defaults={'page': 1},methods=['GET'])
+@app.route('/miner/<path:etherbase>/<int:page>',methods=['GET'])
+def miner(etherbase,page=1):
+    perPage = 10;
     # always connect first 
     conn = connect()
 
     # get all the data for the template
     latestBlock = getLatestBlockFromDB(conn)
-    #data = getDataForMinerPaginated(conn,etherbase,perPage)
+    #data = getLatestAllRewards(conn,etherbase)
     num = getRewardCount(conn,etherbase)
     data3 = getRewardCountByExtra(conn,etherbase)
     #last7 = getLast7Days(conn,etherbase)
-    lastFive = getLatestAllRewards(conn,etherbase)
+    lastFive = getDataForMinerPaginated(conn,etherbase,perPage,page)
     #graphData = getGraphData(conn,etherbase)
     lastUpdate = getLastUpdateTime(conn)
     #close the connection so data will refresh each page
     conn.close()
-    
-    return render_template('miner.html',lastFive=lastFive,lastUpdate=lastUpdate,latestBlock=latestBlock,data=data,etherbase=etherbase,blockCount=num,data3=data3)
+
+    nextURL = '/miner/'+etherbase+'/'+str(page+1)
+    if (page>=2):
+      previous = '/miner/'+etherbase+'/'+str(page-1)
+      return render_template('miner.html',page=page,prev_url=previous,next_url=nextURL,lastFive=lastFive,lastUpdate=lastUpdate,latestBlock=latestBlock,data=data,etherbase=etherbase,blockCount=num,data3=data3)
+
+
+    return render_template('miner.html',page=page,next_url=nextURL,lastFive=lastFive,lastUpdate=lastUpdate,latestBlock=latestBlock,data=data,etherbase=etherbase,blockCount=num,data3=data3)
+
+def url_for_other_page(page):
+    args = request.view_args.copy()
+    args['page'] = page
+    return url_for(request.endpoint, **args)
+app.jinja_env.globals['url_for_other_page'] = url_for_other_page
 
 def getDataForExtra(conn,extra):
   cursor = conn.cursor()
-  query = 'SELECT * FROM BlockChain WHERE extra_data = %s ORDER BY blockNum DESC'
+  query = 'SELECT * FROM blockchain WHERE extra_data = %s ORDER BY blockNum DESC'
   cursor.execute(query,(extra))
   data = cursor.fetchall()
   cursor.close()
@@ -499,7 +516,7 @@ def getDataForExtra(conn,extra):
 
 def getDataForExtraLimited(conn,extra,limit):
   cursor = conn.cursor()
-  query = 'SELECT * FROM BlockChain WHERE extra_data = %s ORDER BY blockNum DESC LIMIT %s'
+  query = 'SELECT * FROM blockchain WHERE extra_data = %s ORDER BY blockNum DESC LIMIT %s'
   cursor.execute(query,(extra,limit))
   data = cursor.fetchall()
   cursor.close()
@@ -512,7 +529,7 @@ def getDataForExtraLimited(conn,extra,limit):
 
 def getTotalByExtra(conn,extra):
   cursor = conn.cursor()
-  query = 'SELECT COUNT(*) FROM BlockChain WHERE extra_data = %s'
+  query = 'SELECT COUNT(*) FROM blockchain WHERE extra_data = %s'
   cursor.execute(query,(extra))
   data = cursor.fetchone()
   cursor.close()
@@ -526,7 +543,7 @@ def getExtraStats(conn,extra):
            COUNT(blockNum) as theCount, \
            SUM(case when (timest >= DATE(NOW()) - INTERVAL 7 DAY) then 1 else 0 end) as lastWeek, \
            SUM(case when (timest >= DATE(NOW()) - INTERVAL 1 MONTH) then 1 else 0 end) as lastMonth \
-          FROM BlockChain \
+          FROM blockchain \
           WHERE extra_data = %s \
            ORDER BY lastWeek DESC'
 
@@ -583,7 +600,7 @@ def downloadBlockCSV():
     #     csv = fp.read()
     conn = connect()
     cursor = conn.cursor()
-   # query = 'SELECT * INTO OUTFILE 'blockchain.csv' FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '"' LINES TERMINATED BY '\n' FROM BlockChain'
+   # query = 'SELECT * INTO OUTFILE 'blockchain.csv' FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '"' LINES TERMINATED BY '\n' FROM blockchain'
 
     return Response(
         csv,
@@ -593,7 +610,7 @@ def downloadBlockCSV():
 
 def getTopMiners(conn, limit):
 	cursor = conn.cursor()
-	query = 'SELECT miner, Count(*) AS total FROM BlockChain GROUP BY miner ORDER BY total DESC LIMIT %s'
+	query = 'SELECT miner, Count(*) AS total FROM blockchain GROUP BY miner ORDER BY total DESC LIMIT %s'
 	cursor.execute(query,limit)
 	data = cursor.fetchall()
 	cursor.close()
@@ -601,7 +618,7 @@ def getTopMiners(conn, limit):
 
 def getTopRigs(conn, limit):
 	cursor = conn.cursor()
-	query = 'SELECT extra_data, Count(*) AS total FROM BlockChain GROUP BY extra_data ORDER BY total DESC LIMIT %s'
+	query = 'SELECT extra_data, Count(*) AS total FROM blockchain GROUP BY extra_data ORDER BY total DESC LIMIT %s'
 	cursor.execute(query,limit)
 	data = cursor.fetchall()
 	cursor.close()
@@ -609,7 +626,7 @@ def getTopRigs(conn, limit):
 
 def getTopMinersLatest(conn, limit, oldest):
   cursor = conn.cursor()
-  query = 'SELECT miner, Count(*) AS total FROM BlockChain WHERE (timest >= DATE(NOW()) - INTERVAL %s DAY) GROUP BY miner ORDER BY total DESC LIMIT %s'
+  query = 'SELECT miner, Count(*) AS total FROM blockchain WHERE (timest >= DATE(NOW()) - INTERVAL %s DAY) GROUP BY miner ORDER BY total DESC LIMIT %s'
   cursor.execute(query,(oldest,limit))
   data = cursor.fetchall()
   cursor.close()
@@ -617,7 +634,7 @@ def getTopMinersLatest(conn, limit, oldest):
 
 def getTopRigsLatest(conn, limit,oldest):
   cursor = conn.cursor()
-  query = 'SELECT extra_data, Count(*) AS total FROM BlockChain WHERE (timest >= DATE(NOW()) - INTERVAL %s DAY) GROUP BY extra_data ORDER BY total DESC LIMIT %s'
+  query = 'SELECT extra_data, Count(*) AS total FROM blockchain WHERE (timest >= DATE(NOW()) - INTERVAL %s DAY) GROUP BY extra_data ORDER BY total DESC LIMIT %s'
   cursor.execute(query,(oldest,limit))
   data = cursor.fetchall()
   cursor.close()

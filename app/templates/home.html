@@ -37,13 +37,71 @@ background-size: cover;
 background-image: url(./walton.jpg);
 
  }
+.container-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.container-ticker {
+    display: flex;
+   
+    justify-content: center;
+}
+
+div.centered 
+{
+    text-align: center;
+}
+
+div.centered table 
+{
+    margin: 0 auto; 
+    text-align: left;
+}
+
+
+<div class="centered">
+    <table>
+    …
+    </table>
+</div>
 
 </style>
 
 
+<div class="container">
+		
+<div class="row">
+	<div class="container-header">
+<div class="col-md-9 mt-md-0 mt-4">
+<h2>Welcome to Easy Walton Miner! (BETA) </h2>
+
+	
+
+</div>
+
+<div class="col-md-3 .col-md-offset-9">
+
+	<div class="container-ticker">
+
+		<script type="text/javascript">
+crypt_single_base_currency = "WTC (WTC)";crypt_single_target_currency = "US Dollar (USD)";crypt_single_border_width = 0;crypt_single_display_time = false;</script><script type="text/javascript" src="https://www.cryptonator.com/ui/js/widget/single_widget.js"></script>
+
+		{#
+<script type="text/javascript" src="https://files.coinmarketcap.com/static/widget/currency.js"></script><div class="coinmarketcap-currency-widget" data-currencyid="1925" data-base="USD" data-secondary="BTC" data-ticker="true" data-rank="false" data-marketcap="false" data-volume="false" data-stats="USD" data-statsticker="false"></div>
+#}
+</div>
+
+</div>
+	</div>
+</div>
+</div>
+
+</br>
+
+
 <div class="jumbotron">
-	<h2>Welcome to the Easy Walton Tracker! (BETA) </h2>
-	<p>Search your wallet address below to get started</p>
+<p>Search your wallet address below to get started</p>
 	<form action="/searchMiner" method="POST">
 	<div class="input-group">
       <input type="text" class="form-control" name="etherbase" placeholder="Enter Wallet Address"" aria-label="Search for...">
@@ -52,7 +110,7 @@ background-image: url(./walton.jpg);
       </span>
     </div>
 </form>
-<p2> NEW: You can now search by extra_data keys too! Try it out to see all the blocks a specific computer has gotten.</p2>
+<p> NEW: You can now search by extra_data keys too! Try it out to see all the blocks a specific computer has gotten.</p>
 
 <form action="/searchExtra" method="POST">
 	<div class="input-group">
@@ -62,9 +120,12 @@ background-image: url(./walton.jpg);
       </span>
     </div>
 </form>	
-
-
 </div>
+
+
+
+
+
 
 <body data-spy="scroll" data-target=".navbar" data-offset="-50" id="scrollStuff">
 
@@ -176,39 +237,7 @@ body {
 
 
 
-  <h4 id="About">About</h4>
-  <p>
-  	<b1>
 
-	</b1>
-
-  	<b1>
-		This website is made to be a free and not for profit tool for miners of Waltonchain. The purpose is to allow people to monitor blocks they mine with regard to each seperate mining machine. It is run and maintaned by Walton fans as a way to contribute to the community, but is not our full time job. We are not professionals, and we do not store and will not ever ask for any users information such as private keys. If you want to help out you can reach us below or make a contribution on our GitHub. <br/>
-	</b1>
-
-	<b1>
-		The website is currently running on a home server (personal computer), due to the Waltonchain mining program only being avaliable for Windows. Please forgive us if it is a bit slow to update to the latest blocks, migration to a better hosting service will happen as soon as possible. <br/>
-	</b1>
-
-	<b1>
-		Please note that this website is in BETA. We are focusing on getting everything working behind the scenes before making it look pretty. If anyone has any ideas or would like to help out contact us below. <br/>
-	</p>
-
-
-
-  <h4 id="FAQ">FAQ</h4>
-  <p><h5> What is this website? </h5>
-	<p3> This site is a tool for tracking blocks mined to the Waltonchain network. It tracks blocks by address and displays data such as the total blocks mined, when a block was mined by a certain address, and which computer mined each block. To see the data for a specific wallet address, just paste it in the searchbar above! </p3>
-	<h5> How do I setup my miner? </h5>
-	<p3> If you already are mining Walton, you are 99% of the way there! Head over to our <a href="/howto">How To</a> page to view the requirements and finish setting up your miner for this service. <br/>  <br/>
-
-		If you have not started mining Walton yet, you can head on over to the <a href = "www.waltonchain.net">WaltonChain</a> website to download the latest miner. Unfortunately the latest miner will not work with this service, but we hope to get it working soon!
-
-	<h5> Who are you? </h5>
-	<p3> We are Walton supporters looking to contribute to the community. If you have any suggestions, you can contact us at the places below. </p3></p>
-  
-</p3>
-</p>
 
 
 

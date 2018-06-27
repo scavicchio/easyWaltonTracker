@@ -1,0 +1,8 @@
+# Ignore files
+/server/Ignore/databaseUpdaterInfo.txt
+server/Ignore
+databaseUpdaterInfo.txt
+clientinfo.txt
+app/clientinfo.txt
+/app/clientinfo.txt
+app/__pycache__/momentjs.cpython-35.pyc

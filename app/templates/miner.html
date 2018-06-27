@@ -1,6 +1,6 @@
 {% extends "template.html" %}
-{% block content %}
 
+{% block content %}
 
 
 <!--Lets make this shit -->
@@ -11,8 +11,8 @@
 
 <h4>Etherbase: {{etherbase}} </h4>
 <h5>Total Blocks Mined: {{blockCount}} </h5>
-<b1> Last Updated: {{ momentjs(lastUpdate).fromNow() }}
-
+<b1> Last Updated: {{ momentjs(lastUpdate).fromNow() }} </b1>
+</br>
 
 <div class="container">
 
@@ -45,7 +45,7 @@
 		{% for line2 in lastFive %}
 		<tr>
 			<td><a href="http://waltonchain.net/#/blockNumber?blockNumber={{line2.blockNum}}">{{line2.blockNum}}</a></td>
-			<td><a href="/extra/{{line2.extra_data}}">{{line2.extra_data}}</a></td>
+			<td><a href="/extra/{{line2.extra_data}}">{{line2.extra_data | truncate(20, True) }}</a></td>
 			{#
 			<td>
 				{# this is conversion to local datetime 
@@ -68,41 +68,65 @@
 		</tr>
 		{% endfor %}
 	</tbody>
+
+	
+
 </table>
 
-</div>
- </div>
+<center>
+    {% if prev_url %}
+    <a href="{{ prev_url }}">Newer Blocks</a>
+    {% endif %}
+    PAGE: {{page}}
+    {% if next_url %}
+    <a href="{{ next_url }}">Older Blocks</a>
+    {% endif %}
+</center>
 
+
+
+</div>
+
+
+ </div>
 
  <div class="col-sm-5"> 
  	
 
 <div id="BlockRigTotal" style="overflow: scroll">
 
+	<style>
+.table {
+  height: 400px;
+  overflow-y: scroll;
+}
+</style>
 	<h3>Records by Key</h3>
 <table class='max-height:300px table text-centered table-hover data-spy="scroll" overflow: auto tabletable-striped table-sm table-responsive ' style='margin-left: auto; margin-right: auto'>
 		<thead>
 			<tr>
 			<th scope="col">Key</th>
-			<th scope="col">Last Week</th>
-			<th scope="col">Last Month</th>
-			<th scope="col">All Time</th>
+			<th scope="col">Week</th>
+			<th scope="col">Month</th>
+			<th scope="col">All</th>
 		</tr>
 		</thead>
 		<tbody>
 					{% for line in data3 %}
 						<tr>
 						 
-								<td><a href="/extra/{{line.extra_data}}">{{line.extra_data}}</a></td>
+								<td><a href="/extra/{{line.extra_data}}">{{ line.extra_data | truncate(20, True) }}</a></td>
 								<td>{{line.lastWeek}}</td>
 								<td>{{line.lastMonth}}</td>
 								<td>{{line.theCount}}</td>
-								
+								 
 						</tr>
 					{% endfor %}
 			</tbody>
 
 </table>
+	
+
 </div>
 </div>
 </div>
@@ -177,6 +201,15 @@
 		{% endfor %}
 	</tbody>
 </table>
+<center>
+    {% if prev_url %}
+    <a href="{{ prev_url }}">Newer Blocks</a>
+    {% endif %}
+    PAGE: {{page}}
+    {% if next_url %}
+    <a href="{{ next_url }}">Older Blocks</a>
+    {% endif %}
+</center>
 
 </div>
  </div>
@@ -191,9 +224,9 @@
 		<thead>
 			<tr>
 			<th scope="col">Key</th>
-			<th scope="col">Last Week</th>
-			<th scope="col">Last Month</th>
-			<th scope="col">All Time</th>
+			<th scope="col">Week</th>
+			<th scope="col">Month</th>
+			<th scope="col">Time</th>
 		</tr>
 		</thead>
 		<tbody>

@@ -22,12 +22,12 @@ defaultWIN = "d883010700846765746886676f312e31308777696e646f7773"
 #Configure MySQL
 def connect(host,port,username,password,database):
 	conn = pymysql.connect(host=host,
-                        port = int(port),
-                        user=username,
-                        password=password,
-                        db=database,
-                        charset='utf8mb4',
-                        cursorclass=pymysql.cursors.DictCursor)
+						port = int(port),
+						user=username,
+						password=password,
+						db=database,
+						charset='utf8mb4',
+						cursorclass=pymysql.cursors.DictCursor)
 	return conn
 
 # try to grab from a known Default Linux block
@@ -50,22 +50,32 @@ def getDefaultWindows():
 #    default = stdout.decode('utf-8')
 #    return default
 
-    
+	
 #Grabbing data from the blockchain
 def getCurrentBlock():
-    p = subprocess.Popen("\""+defaultWalletPath+"walton.exe\" attach http://127.0.0.1:8545 --exec eth.blockNumber", shell=True, stdout=subprocess.PIPE)
-    p.wait()
-    stdout = p.communicate()[0]
-    return int(stdout.decode("utf-8").strip())
+	p = subprocess.Popen("\""+defaultWalletPath+"walton.exe\" attach http://127.0.0.1:8545 --exec eth.blockNumber", shell=True, stdout=subprocess.PIPE)
+	p.wait()
+	stdout = p.communicate()[0]
+	return int(stdout.decode("utf-8").strip())
 
 def getRawBlockData(blockNum):
-        blockString = str(blockNum)
-        p = subprocess.Popen("\""+defaultWalletPath+"walton.exe\" attach http://127.0.0.1:8545 --exec eth.getBlock("+blockString+")", shell=True, stdout=subprocess.PIPE)
-        #p.wait()
-        data = p.communicate()[0].decode()
-        return data
+		blockString = str(blockNum)
+		p = subprocess.Popen("\""+defaultWalletPath+"walton.exe\" attach http://127.0.0.1:8545 --exec eth.getBlock("+blockString+")", shell=True, stdout=subprocess.PIPE)
+		#p.wait()
+		data = p.communicate()[0].decode()
+		return data
 
-def cleanBlockData(rawData):
+def getRawTransactionData(transaction):
+		blockString = "'"+transaction+"'"
+		#print(blockString)
+		command = "\""+defaultWalletPath+"walton.exe\" attach http://127.0.0.1:8545 --exec eth.getTransaction("+blockString+")"
+		#print(command)
+		p = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
+		#p.wait()
+		data = p.communicate()[0].decode()
+		return data
+
+def cleanData(rawData):
 	stripped = rawData.strip()
 	theList = stripped.split()
 	theList = theList[1:-1]
@@ -75,34 +85,17 @@ def cleanBlockData(rawData):
 
 def getBlockData(blockNum):
 	data = getRawBlockData(blockNum)
-	theList = cleanBlockData(data)
+	theList = cleanData(data)
+	return theList
+
+def getTransactionData(transaction):
+	data = getRawTransactionData(transaction)
+	theList = cleanData(data)
 	return theList
 
 def databaseData(blockNum):
 	data = getBlockData(blockNum)
-
-	difficulty = data["difficulty"]
-	miner = data["miner"]
-	extra_data = data["extraData"][2:]
-	#print(defaultLINUX)
-	#print(defaultWIN)
-	if (extra_data == defaultLINUX):
-		#print('default LIN found')
-		extra_data = "Linux"
-	elif (extra_data == defaultWIN):
-		#print('default WIN found')
-		extra_data = "Windows"
-	else:
-		try:
-			extra_data = bytearray.fromhex(extra_data).decode().strip()
-		except ValueError:
-			print("Found error decoding extra data, will insert original.")
-
-	timest = data["timestamp"]
-	timest = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(int(timest)))
-	gas = data["gasUsed"]
-
-	return miner,extra_data,difficulty,timest,gas
+	return data
 
 # all string
 #def printDictDataTypes(dictionary):
@@ -112,37 +105,95 @@ def databaseData(blockNum):
 #adding data to the SQL database in the BlockChain table
 def insertToDatabase(blockNum):
 	data = databaseData(blockNum)
-	miner = data[0]
-	extra = data[1]
-	difficulty = data[2]
-	timest = data[3]
-	gas = data[4]
+	
+	miner = data['miner']
+	extra = data['extraData'][2:]
+	difficulty = data['difficulty']
+	timest = data['timestamp']
+	gas = data['gasUsed']
+	hasher = data['hash']
+	totaldifficulty = data['totalDifficulty']
+	nonce = data['nonce']   
+	transactions = data['transactions']
+
+	if (extra == defaultLINUX):
+		#print('default LIN found')
+		extra = "Linux"
+	elif (extra == defaultWIN):
+		#print('default WIN found')
+		extra = "Windows"
+	else:
+		try:
+			extra = bytearray.fromhex(extra).decode().strip()
+		except ValueError:
+			print("Found error decoding extra data, will insert original.")
+
+	timest = time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(int(timest)))
+
 	cursor = conn.cursor()
 	# needs to be order: block, miner, extra, difficulty, tiemstamp, gas
-	query = 'INSERT INTO BlockChain VALUES(%s, %s, %s, %s, %s, %s)'
-	cursor.execute(query, (blockNum, miner, extra, difficulty, timest, gas))
+	query = 'INSERT INTO blockchain VALUES(%s, %s, %s, %s, %s, %s,%s,%s,%s)'
+	cursor.execute(query, (blockNum, miner, extra, difficulty, timest, gas,hasher,totaldifficulty,nonce))
 	conn.commit()
 	cursor.close()
+
+	if (transactions != '[]'):
+		transactions = transactions.strip('[').strip(']')
+		transactions = transactions.split(',')
+		#print(transactions)
+		#print(type(transactions))
+		print("looping")
+		for x in transactions:
+			x = x.strip('"')
+		#	print(x)
+		#	print(type(x))
+		#	print(1)
+			insertTransaction(x,blockNum,timest)
+			print("	     " + x)
+
+	
+
 	return
 
+
+def insertTransaction(transaction,blockNum,timest):
+	data = getTransactionData(transaction)
+	#print(data)
+	blockHash = data['blockHash']
+	sender = data['from']
+	reciever = data['to']
+	gas = data['gasPrice']
+	transactionHash = data["hash"]
+	inputData = data['input']
+	r = data['r']
+	s = data['s']
+	value = float(float(data['value'])/float((10**18)))
+
+	cursor = conn.cursor()
+	# needs to be order: block, miner, extra, difficulty, tiemstamp, gas
+	query = 'INSERT INTO transaction VALUES(%s, %s, %s, %s, %s, %s,%s,%s,%s,%s,%s)'
+	cursor.execute(query, (blockNum,blockHash,sender,reciever,gas,transactionHash,inputData,r,s,value,timest))
+	conn.commit()
+	cursor.close()
+
 def getLatestBlockFromDB():
-    cursor = conn.cursor()
-    query = 'SELECT blockNum FROM BlockChain ORDER BY blockNum DESC LIMIT 1'
-    cursor.execute(query)
-    latestBlock = cursor.fetchone()
-    cursor.close()
-    print(latestBlock)
-    return latestBlock;
+	cursor = conn.cursor()
+	query = 'SELECT blockNum FROM blockchain ORDER BY blockNum DESC LIMIT 1'
+	cursor.execute(query)
+	latestBlock = cursor.fetchone()
+	cursor.close()
+	print(latestBlock)
+	return latestBlock;
 
 
 def runUntilCurrent(workingBlock,currentBlock):
-    print("running until current, working block: ", workingBlock)
-    while (workingBlock < currentBlock):
-    	print(workingBlock)
-    	insertToDatabase(workingBlock)
-    	workingBlock = workingBlock+1
-        
-    return
+	print("running until current, working block: ", workingBlock)
+	while (workingBlock < currentBlock):
+		print(workingBlock)
+		insertToDatabase(workingBlock)
+		workingBlock = workingBlock+1
+		
+	return
 
 # so I can upload to github and not worry about hacking
 with open("Ignore/databaseUpdaterInfo.txt", "r") as ins:
@@ -162,47 +213,47 @@ conn = connect(host,port,username,password,database)
 
 #test to print the get all data
 def main():
-    
+	
 
-    workingBlock = 0;
-    #problem block was 17743 fixed by removing p.wait() after communicate
-    # seems like data is still OK.....
-    #print(getRawBlockData(17743))
-    LatestBlock = 0;
-    #get defaults
-    defaultWIN = getDefaultWindows().rstrip().strip('"')
-    defaultLINUX = getDefaultLinux().rstrip().strip('"')
-    print('Set Defaults...')
-    print('windows default: ', defaultWIN)
-    print('linux default: ', defaultLINUX)
+	workingBlock = 0;
+	#problem block was 17743 fixed by removing p.wait() after communicate
+	# seems like data is still OK.....
+	#print(getRawBlockData(17743))
+	LatestBlock = 0;
+	#get defaults
+	defaultWIN = getDefaultWindows().rstrip().strip('"')
+	defaultLINUX = getDefaultLinux().rstrip().strip('"')
+	print('Set Defaults...')
+	print('windows default: ', defaultWIN)
+	print('linux default: ', defaultLINUX)
 
-    placeholder = getLatestBlockFromDB(); # last one that we got data for in DB
-    if placeholder is None:
-    	print('Initial Setup')
-    else:
-    	LatestBlock = placeholder["blockNum"]
+	placeholder = getLatestBlockFromDB(); # last one that we got data for in DB
+	if placeholder is None:
+		print('Initial Setup')
+	else:
+		LatestBlock = placeholder["blockNum"]
 
-    print(LatestBlock)
+	print(LatestBlock)
 
-    workingBlock = LatestBlock+1; # the one we are working on right now
-    currentBlock = getCurrentBlock(); # the current latest block being mined
-    delay = 10; # how long to wait before checking if up to date
+	workingBlock = LatestBlock+1; # the one we are working on right now
+	currentBlock = getCurrentBlock(); # the current latest block being mined
+	delay = 10; # how long to wait before checking if up to date
 
-    runUntilCurrent(workingBlock,currentBlock);
-    
-    #check if we are up to date and get the latest block from the database
-    while True:
-    	try:
-    		print(currentBlock)
-    		currentBlock = getCurrentBlock()
-    		workingBlock = getLatestBlockFromDB()["blockNum"]+1;
-    		if (workingBlock<currentBlock):
-    			runUntilCurrent(workingBlock,currentBlock)
-    	except:
-    		print('Error Updating DB: Will try again in 10s.')
-    		
-    	time.sleep(delay)
-    return;
+	runUntilCurrent(workingBlock,currentBlock);
+	
+	#check if we are up to date and get the latest block from the database
+	while True:
+		try:
+			print(currentBlock)
+			currentBlock = getCurrentBlock()
+			workingBlock = getLatestBlockFromDB()["blockNum"]+1;
+			if (workingBlock<currentBlock):
+				runUntilCurrent(workingBlock,currentBlock)
+		except:
+			print('Error Updating DB: Will try again in 10s.')
+			
+		time.sleep(delay)
+	return;
 
 if __name__ == '__main__':
-    main()
+	main()
