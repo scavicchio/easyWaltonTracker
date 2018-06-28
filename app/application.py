@@ -467,6 +467,28 @@ def getMinerRank(conn,miner):
 def getExtraRank(conn,extra):
 	return
 
+@app.route('/miner/all/<path:etherbase>',methods=['GET'])
+def minerAll(etherbase):
+    allBlocks = True
+    # always connect first 
+    conn = connect()
+
+    # get all the data for the template
+    latestBlock = getLatestBlockFromDB(conn)
+    #data = getLatestAllRewards(conn,etherbase)
+    num = getRewardCount(conn,etherbase)
+    data3 = getRewardCountByExtra(conn,etherbase)
+    #last7 = getLast7Days(conn,etherbase)
+    lastFive = getLatestAllRewards(conn,etherbase)
+    #graphData = getGraphData(conn,etherbase)
+    lastUpdate = getLastUpdateTime(conn)
+    #close the connection so data will refresh each page
+    conn.close()
+
+    return render_template('miner.html',allBlocks=allBlocks,lastFive=lastFive,lastUpdate=lastUpdate,latestBlock=latestBlock,data=data,etherbase=etherbase,blockCount=num,data3=data3)
+
+
+
 @app.route('/miner/<path:etherbase>',methods=['GET'])
 @app.route('/miner/<path:etherbase>/', defaults={'page': 1},methods=['GET'])
 @app.route('/miner/<path:etherbase>/<int:page>',methods=['GET'])
@@ -594,19 +616,24 @@ def howto():
     
     return render_template('howto.html',latestBlock=latestBlock)
 
-@app.route("/downloadBlockCSV")
-def downloadBlockCSV():
+@app.route("/downloadMinerBlockCSV/<path:etherbase>")
+def downloadBlockCSV(etherbase):
     # with open("outputs/Adjacency.csv") as fp:
     #     csv = fp.read()
     conn = connect()
     cursor = conn.cursor()
+    query = 'SELECT * FROM blockchain WHERE miner = %s ORDER BY blockNum DESC'
+    cursor.execute(query,(etherbase))
+    data = cursor.fetchall()
+    cursor.close()
+
    # query = 'SELECT * INTO OUTFILE 'blockchain.csv' FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '"' LINES TERMINATED BY '\n' FROM blockchain'
 
     return Response(
         csv,
         mimetype="text/csv",
         headers={"Content-disposition":
-                 "attachment; filename=myplot.csv"})
+                 "attachment; filename=data.csv"})
 
 def getTopMiners(conn, limit):
 	cursor = conn.cursor()
