@@ -227,6 +227,62 @@ crypt_single_base_currency = "WTC (WTC)";crypt_single_target_currency = "US Doll
 	</table>
 </div>
 
+<h4>Block Difficulty History</h4>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"></script>
+
+<canvas id="myChart" width="auto" height="auto"></canvas>
+<script>
+var ctx = document.getElementById("myChart").getContext('2d');
+var labels = [];
+var data = [];
+
+{% for line in graph %}
+	labels.push("{{line.blockNum}}");
+	data.push({{line.difficulty}});
+{% endfor %}
+
+var myChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: labels,
+        datasets: [{
+            label: 'Difficulty (TH)',
+            data: data,
+            pointRadius: 0,
+            borderWidth: 1,
+            borderColor: 'rgba(54, 162, 235, 1)',
+            pointBorderColor: 'rgba(54, 162, 235, 1)',
+            pointHoverRadius: 4,
+            backgroundColor: 'rgba(54, 162, 235, 0.2)', 
+        }]
+    },
+    options: {
+        scales: {
+        	
+            yAxes: [{
+
+                ticks: {
+                    beginAtZero:true,
+                  	maxTicksLimit: 10
+                }
+            }],
+            xAxes: [{
+                ticks: {
+                    beginAtZero:true,
+                    maxTicksLimit: 20
+                }
+            }]
+        },
+        title: {
+            display: true,
+            text: 'Difficulty Chart'
+        },
+    }
+});
+</script>
+
+
 <style type="text/css">
 
 body {
@@ -234,12 +290,6 @@ body {
 }
 
 </style>
-
-
-
-
-
-
 
 </b1>
 </p>

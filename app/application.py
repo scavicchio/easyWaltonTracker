@@ -42,8 +42,8 @@ with open("clientinfo.txt", "r") as ins:
 def connect():
 	conn = pymysql.connect(host=host,
                         port = int(port),
-                        user=dbUser,
-                        password=dbPassword,
+                        user= dbUser,
+                        password= dbPassword,
                         db=database,
                         charset='utf8mb4',
                         cursorclass=pymysql.cursors.DictCursor)
@@ -168,6 +168,14 @@ def getGraphData(conn,etherbase):
   cursor = conn.cursor()
   query = 'SELECT blockNum, extra_data, timest FROM blockchain WHERE miner = %s ORDER BY timest ASC'
   cursor.execute(query, (etherbase))
+  data = cursor.fetchall()
+  cursor.close()
+  return data
+
+def getDifficultyGraphData(conn):
+  cursor = conn.cursor()
+  query = 'SELECT blockNum, difficulty, timest FROM blockchain WHERE ((blockNum-1) % 100 = 0) ORDER BY blockNum ASC'
+  cursor.execute(query)
   data = cursor.fetchall()
   cursor.close()
   return data
@@ -302,15 +310,18 @@ def homepage(error="None"):
     latestBlock = getLatestBlockFromDB(conn)
     lastUpdate = getLastUpdateTime(conn)
     lastTen = getLatestNBlocksOffset(conn,per_page,page)
+    graph = getDifficultyGraphData(conn)
     conn.close()
 
+    for x in graph:
+      x['difficulty'] = float("{0:.2f}".format(x['difficulty']/difficultyHashMagnitude))
     #pagination = Pagination(page=page, per_page=per_page, total = int(latestBlock),
     #                       css_framework='bootstrap4')
 
     if (error != "None"):
-      return render_template('home.html',latestBlock=latestBlock,lastTen=lastTen,lastUpdate=lastUpdate,error=error)
+      return render_template('home.html',latestBlock=latestBlock,lastTen=lastTen,lastUpdate=lastUpdate,error=error,graph=graph)
 
-    return render_template('home.html',latestBlock=latestBlock,lastUpdate=lastUpdate,lastTen=lastTen)
+    return render_template('home.html',latestBlock=latestBlock,lastUpdate=lastUpdate,lastTen=lastTen,graph=graph)
 
 #about page
 #@app.route('/about')
@@ -660,6 +671,19 @@ def highScores():
   conn.close()
 
   return render_template('highscores.html',latestBlock = latestBlock, lastUpdate = lastUpdate, topWallets = topWallets, topRigs = topRigs,topWallets24 = topWallets24, topRigs24 = topRigs24,topWalletsWeek = topWalletsWeek, topRigsWeek = topRigsWeek,topWalletsMonth = topWalletsMonth, topRigsMonth = topRigsMonth)
+
+@app.route("/difficulty")
+def difficultyPage():
+  conn = connect()
+  latestBlock = getLatestBlockFromDB(conn)
+  lastUpdate = getLastUpdateTime(conn)
+  graph = getDifficultyGraphData(conn)
+  conn.close()
+
+  for x in graph:
+    x['difficulty'] = float("{0:.2f}".format(x['difficulty']/difficultyHashMagnitude))
+    
+  return render_template('difficulty.html',latestBlock = latestBlock, lastUpdate = lastUpdate,graph=graph)
 
 
 if __name__ == "__main__":
