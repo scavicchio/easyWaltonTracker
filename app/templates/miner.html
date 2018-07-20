@@ -21,8 +21,9 @@
     <div class="col-sm-7">
 
 <h3> All Mined Blocks </h3>
-
-
+<center>
+<a href="/miner/all/{{etherbase}}"> See All </a> 
+ | <a href="/miner/{{etherbase}}"> See Less </a> </center>
 <div id="lastFiveTable">
 	
 <table class=' table text-centered table-hover data-spy="scroll" overflow: auto table  table-striped table-sm table-responsive ' style='margin-left: auto; margin-right: auto'>
@@ -77,8 +78,9 @@
     {% if prev_url %}
     <a href="{{ prev_url }}">Newer Blocks</a>
     {% endif %}
-    PAGE: {{page}}
+ 
     {% if next_url %}
+
     <a href="{{ next_url }}">Older Blocks</a>
     {% endif %}
 </center>
@@ -94,15 +96,25 @@
  	
 
 <div id="BlockRigTotal" style="overflow: scroll">
-
-	<style>
-.table {
+<style>
+.table#byKey {
   height: 400px;
   overflow-y: scroll;
 }
 </style>
+
+{% if allBlocks %}
+<style>
+.table#byKey {
+  height: 100%;
+  overflow-y: scroll;
+}
+</style>
+{% endif %}
+
+
 	<h3>Records by Key</h3>
-<table class='max-height:300px table text-centered table-hover data-spy="scroll" overflow: auto tabletable-striped table-sm table-responsive ' style='margin-left: auto; margin-right: auto'>
+<table id='byKey' class='max-height:300px table text-centered table-hover data-spy="scroll" overflow: auto tabletable-striped table-sm table-responsive ' style='margin-left: auto; margin-right: auto'>
 		<thead>
 			<tr>
 			<th scope="col">Key</th>
@@ -205,10 +217,14 @@
     {% if prev_url %}
     <a href="{{ prev_url }}">Newer Blocks</a>
     {% endif %}
-    PAGE: {{page}}
+    
     {% if next_url %}
+    PAGE: {{page}}
     <a href="{{ next_url }}">Older Blocks</a>
     {% endif %}
+</br>
+    <a href="/miner/all/{{etherbase}}"> See All </a> 
+ | <a href="/miner/{{etherbase}}"> See Less </a> 
 </center>
 
 </div>

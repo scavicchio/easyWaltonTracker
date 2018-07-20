@@ -42,8 +42,8 @@ with open("clientinfo.txt", "r") as ins:
 def connect():
 	conn = pymysql.connect(host=host,
                         port = int(port),
-                        user= dbUser,
-                        password= dbPassword,
+                        user=dbUser,
+                        password=dbPassword,
                         db=database,
                         charset='utf8mb4',
                         cursorclass=pymysql.cursors.DictCursor)
@@ -311,6 +311,7 @@ def homepage(error="None"):
     lastUpdate = getLastUpdateTime(conn)
     lastTen = getLatestNBlocksOffset(conn,per_page,page)
     graph = getDifficultyGraphData(conn)
+
     conn.close()
 
     for x in graph:
@@ -319,9 +320,9 @@ def homepage(error="None"):
     #                       css_framework='bootstrap4')
 
     if (error != "None"):
-      return render_template('home.html',latestBlock=latestBlock,lastTen=lastTen,lastUpdate=lastUpdate,error=error,graph=graph)
+      return render_template('home.html',graph=graph,latestBlock=latestBlock,lastTen=lastTen,lastUpdate=lastUpdate,error=error)
 
-    return render_template('home.html',latestBlock=latestBlock,lastUpdate=lastUpdate,lastTen=lastTen,graph=graph)
+    return render_template('home.html',graph=graph,latestBlock=latestBlock,lastUpdate=lastUpdate,lastTen=lastTen)
 
 #about page
 #@app.route('/about')
@@ -477,6 +478,28 @@ def getMinerRank(conn,miner):
 
 def getExtraRank(conn,extra):
 	return
+
+@app.route('/miner/all/<path:etherbase>',methods=['GET'])
+def minerAll(etherbase):
+    allBlocks = True
+    # always connect first 
+    conn = connect()
+
+    # get all the data for the template
+    latestBlock = getLatestBlockFromDB(conn)
+    #data = getLatestAllRewards(conn,etherbase)
+    num = getRewardCount(conn,etherbase)
+    data3 = getRewardCountByExtra(conn,etherbase)
+    #last7 = getLast7Days(conn,etherbase)
+    lastFive = getLatestAllRewards(conn,etherbase)
+    #graphData = getGraphData(conn,etherbase)
+    lastUpdate = getLastUpdateTime(conn)
+    #close the connection so data will refresh each page
+    conn.close()
+
+    return render_template('miner.html',allBlocks=allBlocks,lastFive=lastFive,lastUpdate=lastUpdate,latestBlock=latestBlock,data=data,etherbase=etherbase,blockCount=num,data3=data3)
+
+
 
 @app.route('/miner/<path:etherbase>',methods=['GET'])
 @app.route('/miner/<path:etherbase>/', defaults={'page': 1},methods=['GET'])
