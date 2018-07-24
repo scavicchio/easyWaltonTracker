@@ -18,6 +18,7 @@ import re
 import smtplib
 from momentjs import momentjs
 import csv
+import math
 
 
 #Initialize the app from Flask
@@ -305,7 +306,7 @@ def sendSignupConfirmation(etherbase,email,extra):
 def homepage(error="None"):
     page, per_page, offset = get_page_args(page_parameter='page',
                                            per_page_parameter='per_page')
-    per_page = 10
+    per_page = 5
     conn = connect()
     latestBlock = getLatestBlockFromDB(conn)
     lastUpdate = getLastUpdateTime(conn)
@@ -521,13 +522,15 @@ def miner(etherbase,page=1):
     #close the connection so data will refresh each page
     conn.close()
 
+    lastMined = lastFive[0]['timest']
+
     nextURL = '/miner/'+etherbase+'/'+str(page+1)
     if (page>=2):
       previous = '/miner/'+etherbase+'/'+str(page-1)
-      return render_template('miner.html',page=page,prev_url=previous,next_url=nextURL,lastFive=lastFive,lastUpdate=lastUpdate,latestBlock=latestBlock,data=data,etherbase=etherbase,blockCount=num,data3=data3)
+      return render_template('miner.html',lastMined=lastMined,page=page,prev_url=previous,next_url=nextURL,lastFive=lastFive,lastUpdate=lastUpdate,latestBlock=latestBlock,data=data,etherbase=etherbase,blockCount=num,data3=data3)
 
 
-    return render_template('miner.html',page=page,next_url=nextURL,lastFive=lastFive,lastUpdate=lastUpdate,latestBlock=latestBlock,data=data,etherbase=etherbase,blockCount=num,data3=data3)
+    return render_template('miner.html',lastMined=lastMined,page=page,next_url=nextURL,lastFive=lastFive,lastUpdate=lastUpdate,latestBlock=latestBlock,data=data,etherbase=etherbase,blockCount=num,data3=data3)
 
 def url_for_other_page(page):
     args = request.view_args.copy()
@@ -597,6 +600,7 @@ def extra(extra):
     lastUpdate = getLastUpdateTime(conn)
     total = getTotalByExtra(conn,extra)
 
+
     #extra stuff
     stats = getExtraStats(conn,extra)
 
@@ -604,20 +608,22 @@ def extra(extra):
       warning = 'Will only display 100 recent results for Default'
       limit = 100
       data = getDataForExtraLimited(conn,extra,limit)
-      return render_template('extra.html',warning=warning,latestBlock=latestBlock, lastUpdate=lastUpdate, data = data,extra=extra,total=total,stats=stats)
+      lastMined = data[0]['timest']
+      return render_template('extra.html',lastMined=lastMined,warning=warning,latestBlock=latestBlock, lastUpdate=lastUpdate, data = data,extra=extra,total=total,stats=stats)
 
     if (extra == 'Linux'):
       warning = 'Will only display 100 recent results for Default'
       limit = 100
       data = getDataForExtraLimited(conn,extra,limit)
-      return render_template('extra.html',warning=warning,latestBlock=latestBlock, lastUpdate=lastUpdate, data = data,extra=extra,total=total,stats=stats)
+      lastMined = data[0]['timest']
+      return render_template('extra.html',lastMined=lastMined,warning=warning,latestBlock=latestBlock, lastUpdate=lastUpdate, data = data,extra=extra,total=total,stats=stats)
 
     data = getDataForExtra(conn,extra)
-    
+    lastMined = data[0]['timest']
 
     conn.close()
     
-    return render_template('extra.html',latestBlock=latestBlock, lastUpdate=lastUpdate, data = data,extra=extra,total=total,stats=stats)
+    return render_template('extra.html',lastMined=lastMined,latestBlock=latestBlock, lastUpdate=lastUpdate, data = data,extra=extra,total=total,stats=stats)
 
 
 @app.route('/howto',methods=['GET'])
@@ -695,18 +701,108 @@ def highScores():
 
   return render_template('highscores.html',latestBlock = latestBlock, lastUpdate = lastUpdate, topWallets = topWallets, topRigs = topRigs,topWallets24 = topWallets24, topRigs24 = topRigs24,topWalletsWeek = topWalletsWeek, topRigsWeek = topRigsWeek,topWalletsMonth = topWalletsMonth, topRigsMonth = topRigsMonth)
 
-@app.route("/difficulty")
+def getMaxTransactions(conn): 
+  cursor = conn.cursor()
+  query = 'SELECT COUNT(*) AS count, DATE(timest) AS day FROM transaction GROUP BY day ORDER BY count DESC LIMIT 1'
+  cursor.execute(query)
+  data = cursor.fetchone()
+  cursor.close()
+
+  return data
+
+def getMaxDifficulty(conn):
+  cursor = conn.cursor()
+  query = 'SELECT difficulty, blockNum FROM blockchain ORDER BY difficulty DESC LIMIT 1'
+  cursor.execute(query)
+  data = cursor.fetchone()
+  cursor.close()
+
+  return data
+
+def getTotalTransactions(conn):
+  cursor = conn.cursor()
+  query = 'SELECT COUNT(*) AS total FROM transaction'
+  cursor.execute(query)
+  data = cursor.fetchone()
+  cursor.close()
+
+  return data
+
+def getAverageDifficulty(conn):
+  cursor = conn.cursor()
+  query = 'SELECT AVG(difficulty) AS average FROM blockchain'
+  cursor.execute(query)
+  data = cursor.fetchone()
+  cursor.close()
+
+  return data
+
+def getActiveWallets(conn):
+  cursor = conn.cursor()
+  query =  'SELECT COUNT(*) AS total \
+            FROM (SELECT DISTINCT(miner) FROM blockchain UNION \
+            (SELECT DISTINCT(sender) FROM transaction) UNION \
+             (SELECT DISTINCT(reciever) FROM transaction)) AS a'
+  cursor.execute(query)
+  data = cursor.fetchone()
+  cursor.close()
+
+  return data
+
+@app.route("/statistics")
+def statistics():
+  conn = connect()
+  latestBlock = getLatestBlockFromDB(conn)
+  lastUpdate = getLastUpdateTime(conn)
+  maxTransactions = getMaxTransactions(conn)
+  maxDifficulty = getMaxDifficulty(conn) 
+  maxDifficulty['difficulty'] = maxDifficulty['difficulty']/difficultyHashMagnitude
+  maxDifficulty['difficulty'] = maxDifficulty['difficulty'] - maxDifficulty['difficulty']%0.01
+  activeWallets = getActiveWallets(conn)
+  totalTransactions = getTotalTransactions(conn)
+  averageDifficulty = getAverageDifficulty(conn)
+  averageDifficulty['average'] = float(averageDifficulty['average'])/difficultyHashMagnitude
+  averageDifficulty['average'] = averageDifficulty['average'] - averageDifficulty['average']%0.01
+
+  #averageTransactins = getAverageTransactions(conn)
+
+  conn.close()
+    
+  return render_template('stats.html',averageDifficulty=averageDifficulty,totalTransactions=totalTransactions,activeWallets=activeWallets,highestDifficulty=maxDifficulty,peakTransactions=maxTransactions,latestBlock = latestBlock, lastUpdate = lastUpdate)
+
+
+@app.route("/charts/difficulty")
 def difficultyPage():
   conn = connect()
   latestBlock = getLatestBlockFromDB(conn)
   lastUpdate = getLastUpdateTime(conn)
-  graph = getDifficultyGraphData(conn)
+  difficultyGraph = getDifficultyGraphData(conn)
+  
   conn.close()
 
-  for x in graph:
+  for x in difficultyGraph:
     x['difficulty'] = float("{0:.2f}".format(x['difficulty']/difficultyHashMagnitude))
     
-  return render_template('difficulty.html',latestBlock = latestBlock, lastUpdate = lastUpdate,graph=graph)
+  return render_template('charts/difficulty.html',latestBlock = latestBlock, lastUpdate = lastUpdate,difficultyGraph=difficultyGraph)
+
+def getTransactionFrequencyGraph(conn):
+  cursor = conn.cursor()
+  query = 'SELECT COUNT(*) AS count, DATE(timest) AS day FROM transaction GROUP BY day'
+  cursor.execute(query)
+  data = cursor.fetchall()
+  cursor.close()
+  return data
+
+
+@app.route("/charts/transactions")
+def transactionChart():
+  conn = connect()
+  latestBlock = getLatestBlockFromDB(conn)
+  lastUpdate = getLastUpdateTime(conn)
+  transactionGraph = getTransactionFrequencyGraph(conn)
+  conn.close()
+    
+  return render_template('charts/transactions.html',transactionGraph=transactionGraph,latestBlock = latestBlock, lastUpdate = lastUpdate)
 
 
 if __name__ == "__main__":

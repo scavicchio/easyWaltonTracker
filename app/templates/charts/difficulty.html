@@ -2,22 +2,21 @@
 {% set active_page = "difficulty" %}
 {% block content %}
 
-<div class="container">
-	
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"></script>
+<div class="container">
 
-<canvas id="myChart" width="auto" height="auto"></canvas>
+<canvas id="secondChart" width="auto" height="auto"></canvas>
 <script>
-var ctx = document.getElementById("myChart").getContext('2d');
+var ctx = document.getElementById("secondChart").getContext('2d');
 var labels = [];
 var data = [];
 
-{% for line in graph %}
-	labels.push("{{line.blockNum}}");
-	data.push({{line.difficulty}});
+{% for line in difficultyGraph %}
+    labels.push("{{line.blockNum}}");
+    data.push({{line.difficulty}});
 {% endfor %}
 
-var myChart = new Chart(ctx, {
+var difficultyChart = new Chart(ctx, {
     type: 'line',
     data: {
         labels: labels,
@@ -39,7 +38,7 @@ var myChart = new Chart(ctx, {
 
                 ticks: {
                     beginAtZero:true,
-                  	maxTicksLimit: 10
+                    maxTicksLimit: 10
                 }
             }],
             xAxes: [{
@@ -50,12 +49,18 @@ var myChart = new Chart(ctx, {
             }]
         },
         title: {
-            display: true,
+            display: false,
             text: 'Difficulty Chart'
         },
+        tooltips: {
+ 			mode: 'index',
+ 			intersect: false
+        }
+
+
+
     }
 });
 </script>
-
 </div>
 {% endblock %}

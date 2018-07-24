@@ -1,0 +1,94 @@
+{% extends "template.html" %}
+{% set active_page = "stats" %}
+{% block content %}
+
+<div class="container">
+	
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"></script>
+
+<div class="container">
+
+<style type="text/css">
+    
+img {
+    max-width: 100%;
+    height: auto;
+    width: auto\9; /* ie8 */
+}
+
+h4 {
+border-bottom: 2px solid midnightblue;
+
+}
+
+</style>
+
+</p>
+
+
+<h4>Blockchain Statistics</h4>
+
+
+<table class="table-responsive ">
+    <tbody>
+        <tr>
+          <th>Peak Difficulty:</th>
+       <td>{{highestDifficulty.difficulty }} TH</td>
+            
+        </tr>
+        <tr>
+          <th>Average Difficulty:</th>
+       <td>{{averageDifficulty.average }} TH</td>
+            
+        </tr>
+        
+        <tr>
+          <th>Peak Transactions Per Day:</th>
+           <td>{{peakTransactions.count}}</td>
+         
+
+        </tr>
+        <tr>
+          <th>Total Active Wallets:</th>
+           <td>{{activeWallets.total}}</td>
+        </tr>
+        <tr>
+          <th>Total Transactions:</th>
+           <td>{{totalTransactions.total}}</td>
+        </tr>
+    </tbody>
+</table>
+
+</br>
+
+<h4>Charts</h4>
+<p></p>
+<div class="row margin-bottom-40">
+<div class="col-md-4">
+<h5>
+<a href="/charts/difficulty"><span aria-hidden="true" class="icon-diamond"></span>&nbsp;Mining Difficulty Chart</a></h5><a href="/charts/difficulty">
+</a><div class="box-shadow shadow-effect-2"><a href="/charts/difficulty">
+<img src="/static/images/difficultyChart.png"></a>
+</div>
+</div>
+<div class="col-md-4">
+<h5>
+<a href="/charts/transactions"><span aria-hidden="true" class="icon-diamond"></span>&nbsp;Transactions Per Day</a></h5><a href="/chart/marketcap">
+</a><div class="box-shadow shadow-effect-2"><a href="/chart/marketcap">
+<img src="/static/images/transactionChart.png"></a>
+</div>
+</div>
+<div class="col-md-4">
+<h5>
+<a href="/highscores"><span aria-hidden="true" class="icon-diamond"></span>&nbsp;Top Earning HighScores</a></h5><a href="/highscores">
+</a><div class="box-shadow shadow-effect-2"><a href="/chart/ethersupplygrowth">
+<img src="/static/images/highscores.png"></a>
+</div>
+</div>
+</div>
+<hr>
+
+</div>
+</div>
+
+{% endblock %}

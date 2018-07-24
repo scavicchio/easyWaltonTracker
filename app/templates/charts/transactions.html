@@ -1,0 +1,66 @@
+{% extends "template.html" %}
+{% set active_page = "transactions" %}
+{% block content %}
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"></script>
+<div class="container">
+<canvas id="myChart" width="auto" height="auto"></canvas>
+<script>
+var ctx = document.getElementById("myChart").getContext('2d');
+var labels = [];
+var data = [];
+
+{% for line in transactionGraph %}
+	labels.push("{{line.day}}");
+	data.push({{line.count}});
+{% endfor %}
+
+var difficultyChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: labels,
+        datasets: [{
+         	label: 'Transactions',
+            data: data,
+            pointRadius: 0,
+            borderWidth: 1,
+            borderColor: 'rgba(54, 162, 235, 1)',
+            pointBorderColor: 'rgba(54, 162, 235, 1)',
+            pointHoverRadius: 4,
+            backgroundColor: 'rgba(54, 162, 235, 0.2)', 
+        }]
+    },
+    options: {
+        scales: {
+
+            yAxes: [{
+
+                ticks: {
+                    beginAtZero:true,
+                  	maxTicksLimit: 10
+                }
+            }],
+            xAxes: [{
+                type: 'time',
+                time: {
+                    displayFormats: {
+                        quarter: 'MMM YYYY'
+                    }
+                }
+
+                
+            }]
+        },
+        title: {
+            display: false,
+            text: 'Transactions Per Day'
+        },
+        tooltips: {
+ 			mode: 'index',
+ 			intersect: false
+        }
+    }
+});
+</script>
+</div>
+{% endblock %}
