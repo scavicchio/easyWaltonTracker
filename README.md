@@ -22,6 +22,7 @@ If you need help or see an issue on the site, please email support@easywaltonmin
 - Switched table layout on miner.html
 # API 
 We have started working on a free API for developers to grab waltonchain blockchain data. The documentation is below.
+NOTE THAT ALL SITE REQUESTS ARE LIMITED TO 3000 PER HOUR. Please contact us if you are having issues. 
 ## Single Block
 You can use this to request the information for a block by block number.
 
