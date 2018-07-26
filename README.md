@@ -42,6 +42,16 @@ Sample Output:
       "timest": "Thu, 26 Jul 2018 01:42:40 GMT", 
       "totaldifficulty": 77397208677506629
     }
+## Most Recent Block
+You can use this to request the information for a block by block number.
+
+Usage:
+
+  >> curl http://wtcexplorer.io/api/getLatestBlock
+  
+Sample Output:
+
+    161948
 ## Single Transaction
 You can use this to request the information for a transaction by hash.
 
