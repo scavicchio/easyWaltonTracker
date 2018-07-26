@@ -10,7 +10,7 @@
 
 
 #import Flask Library
-from flask import Flask, render_template, request, session, url_for, redirect, Response
+from flask import Flask, render_template, request, session, url_for, redirect, Response, jsonify
 from flask_paginate import Pagination, get_page_args
 from flask_bootstrap import Bootstrap
 import pymysql.cursors
@@ -19,11 +19,17 @@ import smtplib
 from momentjs import momentjs
 import csv
 import math
-
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 
 #Initialize the app from Flask
 app = Flask(__name__)
 app.jinja_env.globals['momentjs'] = momentjs
+limiter = Limiter(
+    app,
+    key_func=get_remote_address,
+    default_limits=["3000 per hour"]
+)
 
 # Lets make some global vars
 with open("clientinfo.txt", "r") as ins:
@@ -495,10 +501,11 @@ def minerAll(etherbase):
     lastFive = getLatestAllRewards(conn,etherbase)
     #graphData = getGraphData(conn,etherbase)
     lastUpdate = getLastUpdateTime(conn)
+    lastMined = lastFive[0]['timest']
     #close the connection so data will refresh each page
     conn.close()
 
-    return render_template('miner.html',allBlocks=allBlocks,lastFive=lastFive,lastUpdate=lastUpdate,latestBlock=latestBlock,data=data,etherbase=etherbase,blockCount=num,data3=data3)
+    return render_template('miner.html',lastMined=lastMined,allBlocks=allBlocks,lastFive=lastFive,lastUpdate=lastUpdate,latestBlock=latestBlock,data=data,etherbase=etherbase,blockCount=num,data3=data3)
 
 
 
@@ -634,20 +641,6 @@ def howto():
     
     return render_template('howto.html',latestBlock=latestBlock)
 
-@app.route("/downloadBlockCSV")
-def downloadBlockCSV():
-    # with open("outputs/Adjacency.csv") as fp:
-    #     csv = fp.read()
-    conn = connect()
-    cursor = conn.cursor()
-   # query = 'SELECT * INTO OUTFILE 'blockchain.csv' FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '"' LINES TERMINATED BY '\n' FROM blockchain'
-
-    return Response(
-        csv,
-        mimetype="text/csv",
-        headers={"Content-disposition":
-                 "attachment; filename=myplot.csv"})
-
 def getTopMiners(conn, limit):
 	cursor = conn.cursor()
 	query = 'SELECT miner, Count(*) AS total FROM blockchain GROUP BY miner ORDER BY total DESC LIMIT %s'
@@ -749,26 +742,93 @@ def getActiveWallets(conn):
 
   return data
 
+### FOR 90 DAYS ###
+
+def getMaxTransactions90(conn,days): 
+  cursor = conn.cursor()
+  query = 'SELECT COUNT(*) AS count, DATE(timest) AS day FROM transaction WHERE (timest >= DATE(NOW()) - INTERVAL %s DAY) GROUP BY day ORDER BY count DESC LIMIT 1'
+  cursor.execute(query,(days))
+  data = cursor.fetchone()
+  cursor.close()
+
+  return data
+
+def getMaxDifficulty90(conn,days):
+  cursor = conn.cursor()
+  query = 'SELECT difficulty, blockNum FROM blockchain WHERE (timest >= DATE(NOW()) - INTERVAL %s DAY) ORDER BY difficulty DESC LIMIT 1'
+  cursor.execute(query,(days))
+  data = cursor.fetchone()
+  cursor.close()
+
+  return data
+
+def getTotalTransactions90(conn,days):
+  cursor = conn.cursor()
+  query = 'SELECT COUNT(*) AS total FROM transaction WHERE (timest >= DATE(NOW()) - INTERVAL %s DAY)'
+  cursor.execute(query,(days))
+  data = cursor.fetchone()
+  cursor.close()
+
+  return data
+
+def getAverageDifficulty90(conn,days):
+  cursor = conn.cursor()
+  query = 'SELECT AVG(difficulty) AS average FROM blockchain WHERE (timest >= DATE(NOW()) - INTERVAL %s DAY)'
+  cursor.execute(query,(days))
+  data = cursor.fetchone()
+  cursor.close()
+
+  return data
+
+def getActiveWallets90(conn,days):
+  cursor = conn.cursor()
+  query =  'SELECT COUNT(*) AS total \
+            FROM (SELECT DISTINCT(miner) FROM blockchain WHERE (timest >= DATE(NOW()) - INTERVAL %s DAY) UNION \
+            (SELECT DISTINCT(sender) FROM transaction WHERE (timest >= DATE(NOW()) - INTERVAL %s DAY)) UNION \
+             (SELECT DISTINCT(reciever) FROM transaction WHERE (timest >= DATE(NOW()) - INTERVAL %s DAY))) AS a'
+  cursor.execute(query,(days,days,days))
+  data = cursor.fetchone()
+  cursor.close()
+
+  return data
+
 @app.route("/statistics")
 def statistics():
   conn = connect()
   latestBlock = getLatestBlockFromDB(conn)
   lastUpdate = getLastUpdateTime(conn)
+  days = 30
+
   maxTransactions = getMaxTransactions(conn)
   maxDifficulty = getMaxDifficulty(conn) 
   maxDifficulty['difficulty'] = maxDifficulty['difficulty']/difficultyHashMagnitude
-  maxDifficulty['difficulty'] = maxDifficulty['difficulty'] - maxDifficulty['difficulty']%0.01
+  maxDifficulty['difficulty'] = '%.2f'%(maxDifficulty['difficulty'])
   activeWallets = getActiveWallets(conn)
   totalTransactions = getTotalTransactions(conn)
   averageDifficulty = getAverageDifficulty(conn)
   averageDifficulty['average'] = float(averageDifficulty['average'])/difficultyHashMagnitude
-  averageDifficulty['average'] = averageDifficulty['average'] - averageDifficulty['average']%0.01
+  averageDifficulty['average'] = '%.2f'%(averageDifficulty['average'])
+
+  maxTransactions90 = getMaxTransactions90(conn,days)
+  maxDifficulty90 = getMaxDifficulty90(conn,days) 
+  maxDifficulty90['difficulty'] = maxDifficulty90['difficulty']/difficultyHashMagnitude
+  maxDifficulty90['difficulty'] = '%.2f'%(maxDifficulty90['difficulty'])
+  activeWallets90 = getActiveWallets90(conn,days)
+  totalTransactions90 = getTotalTransactions90(conn,days)
+  averageDifficulty90 = getAverageDifficulty90(conn,days)
+  averageDifficulty90['average'] = float(averageDifficulty90['average'])/difficultyHashMagnitude
+  averageDifficulty90['average'] = '%.2f'%(averageDifficulty90['average'])
 
   #averageTransactins = getAverageTransactions(conn)
 
   conn.close()
     
-  return render_template('stats.html',averageDifficulty=averageDifficulty,totalTransactions=totalTransactions,activeWallets=activeWallets,highestDifficulty=maxDifficulty,peakTransactions=maxTransactions,latestBlock = latestBlock, lastUpdate = lastUpdate)
+  return render_template('stats.html',days=days,averageDifficulty=averageDifficulty, \
+    totalTransactions=totalTransactions, activeWallets=activeWallets,highestDifficulty=maxDifficulty, \
+    peakTransactions=maxTransactions,latestBlock = latestBlock, lastUpdate = lastUpdate, \
+    averageDifficulty90=averageDifficulty90, \
+    totalTransactions90=totalTransactions90, activeWallets90=activeWallets90,highestDifficulty90=maxDifficulty90, \
+    peakTransactions90=maxTransactions90)
 
 
 @app.route("/charts/difficulty")
@@ -804,6 +864,91 @@ def transactionChart():
     
   return render_template('charts/transactions.html',transactionGraph=transactionGraph,latestBlock = latestBlock, lastUpdate = lastUpdate)
 
+### API ###
+### API ###
+### API ###
+### API ###
+### API ###
+
+def getBlock(conn,blockNum): 
+  cursor = conn.cursor()
+  query = 'SELECT * FROM blockchain WHERE blockNum = %s'
+  cursor.execute(query,(blockNum))
+  data = cursor.fetchone()
+  cursor.close()
+  return data
+
+def getLatestNBlocksAPI(conn,index):
+  cursor = conn.cursor()
+  query = 'SELECT * FROM blockchain ORDER BY blockNum DESC LIMIT %s'
+  cursor.execute(query, (index))
+  data = cursor.fetchall()
+  cursor.close()
+  return data
+
+def getTransactionAPI(conn,hash):
+  cursor = conn.cursor()
+  query = 'SELECT * FROM transaction WHERE hash = %s'
+  cursor.execute(query, (hash))
+  data = cursor.fetchone()
+  cursor.close()
+  return data
+
+def getTransactionBlockAPI(conn,hash):
+  cursor = conn.cursor()
+  query = 'SELECT * FROM transaction WHERE blockNum = %s'
+  cursor.execute(query, (hash))
+  data = cursor.fetchall()
+  cursor.close()
+  return data
+
+### APP ROUTES FOR API ###
+### APP ROUTES FOR API ###
+### APP ROUTES FOR API ###
+### APP ROUTES FOR API ###
+### APP ROUTES FOR API ###
+
+@app.route("/api/getBlock/<path:blockNum>")
+def apiGetBlock(blockNum):
+  conn = connect() 
+  data = getBlock(conn,blockNum)
+  return jsonify(data)
+
+@app.route("/api/getLastBlocks/<path:num>")
+def apiGetLastBlocks(num): 
+  conn = connect()
+  data = getLatestNBlocksAPI(conn,int(num))
+  return jsonify(data)
+
+@app.route("/api/miningRewards/<path:etherbase>")
+def apiGetMiningRewards(etherbase): 
+  conn = connect()
+  data = getDataForMiner(conn,etherbase)
+  return jsonify(data)
+
+@app.route("/api/miningRewards/extra/<path:extra>")
+def apiGetExtraRewards(extra): 
+  conn = connect()
+  data = getDataForExtra(conn,extra)
+  return jsonify(data)
+
+@app.route("/api/getTransaction/<path:hash>")
+def apiGetTransaction(hash): 
+  conn = connect()
+  data = getTransactionAPI(conn,hash)
+  return jsonify(data)
+
+@app.route("/api/getBlockTransactions/<path:block>")
+def apiGetTransactions(block): 
+  conn = connect()
+  data = getTransactionBlockAPI(conn,block)
+  return jsonify(data)
+
+@app.route("/api/getLatestBlock")
+def apiGetLatestBlock(): 
+  conn = connect()
+  data = getLatestBlockFromDB(conn)
+  return jsonify(data)
 
 if __name__ == "__main__":
         app.run('127.0.0.1', 5000, debug = True)

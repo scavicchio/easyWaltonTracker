@@ -29,37 +29,44 @@ border-bottom: 2px solid midnightblue;
 <h4>Blockchain Statistics</h4>
 
 
-<table class="table-responsive ">
+<table class="table-responsive table-sm table-hover">
     <tbody>
+      <td></td>
+      <th> {{days}}Day   </th>
+      <th> All </th>
         <tr>
-          <th>Peak Difficulty:</th>
-       <td>{{highestDifficulty.difficulty }} TH</td>
+          <th>Peak Difficulty:TH</th>
+            <td>{{highestDifficulty90.difficulty }}</td>
+            <td>{{highestDifficulty.difficulty }}</td>
             
         </tr>
         <tr>
-          <th>Average Difficulty:</th>
-       <td>{{averageDifficulty.average }} TH</td>
-            
+          <th>Avg. Difficulty:TH</th>
+            <td>{{averageDifficulty90.average }}</td>
+            <td>{{averageDifficulty.average }}</td>
         </tr>
         
         <tr>
-          <th>Peak Transactions Per Day:</th>
-           <td>{{peakTransactions.count}}</td>
-         
+          <th>Peak Daily Trans:</th>
+            <td>{{peakTransactions90.count}}</td>
+            <td>{{peakTransactions.count}} </td>
 
         </tr>
         <tr>
-          <th>Total Active Wallets:</th>
-           <td>{{activeWallets.total}}</td>
+          <th>Active Wallets:</th>
+            <td>{{activeWallets90.total}}</td>
+            <td>{{activeWallets.total}} </td>
         </tr>
         <tr>
           <th>Total Transactions:</th>
-           <td>{{totalTransactions.total}}</td>
+            <td>{{totalTransactions90.total}}</td>
+            <td>{{totalTransactions.total}} </td>
         </tr>
     </tbody>
 </table>
 
 </br>
+
 
 <h4>Charts</h4>
 <p></p>

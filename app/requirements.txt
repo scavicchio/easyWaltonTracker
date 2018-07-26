@@ -6,3 +6,5 @@ pygal==2.4.0
 pytz==2018.4
 tzlocal==1.5.1
 flask-paginate==0.5.1
+Flask-Limiter==1.0.1
+Flask-RESTful==0.3.6
