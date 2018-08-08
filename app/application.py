@@ -864,6 +864,14 @@ def transactionChart():
     
   return render_template('charts/transactions.html',transactionGraph=transactionGraph,latestBlock = latestBlock, lastUpdate = lastUpdate)
 
+@app.route("/countdown")
+def countdown(): 
+  conn = connect()
+  latestBlock = getLatestBlockFromDB(conn)
+  lastUpdate = getLastUpdateTime(conn)
+  conn.close()
+  return render_template('countdown.html',latestBlock=latestBlock,lastUpdate=lastUpdate)
+
 ### API ###
 ### API ###
 ### API ###

@@ -67,6 +67,56 @@ div.centered table
 </div>
 
 </style>
+
+<script type="text/javascript">
+	var swap = 200000;
+	var latest = {{latestBlock}};
+	
+	var averageInterval = 62.4968;
+
+	var startSecondsLeft = (swap-latest)*averageInterval;
+
+	function startTimer(duration, display) {
+    var timer = duration, minutes, seconds;
+    setInterval(function () {
+        seconds = parseInt(timer % 60, 10);
+        secondWorking = startSecondsLeft
+        var days = Math.floor(secondWorking / (3600*24));
+		secondWorking  -= days*3600*24;
+		var hours   = Math.floor(secondWorking / 3600);
+		secondWorking  -= hours*3600;
+		var minutes = Math.floor(secondWorking / 60);
+
+        days = days < 10 ? "0" + days : days;
+        hours = hours < 10 ? "0" + hours : hours;
+        minutes = minutes < 10 ? "0" + minutes : minutes;
+        seconds = seconds < 10 ? "0" + seconds : seconds;
+
+        display.textContent = days + "D:" + hours + "H:" + minutes + "M:" + seconds +"S";
+
+        if (--timer < 0) {
+            timer = duration;
+        }
+    }, 1000);
+}
+
+window.onload = function () {
+    var fiveMinutes = startSecondsLeft,
+        display = document.querySelector('#time');
+    startTimer(fiveMinutes, display);
+};
+
+</script>
+
+<h1></h1>
+<div class="alert alert-info alert-dismissible" role="alert">
+  <body>
+    <div>Countdown to Token Swap: <span id="time"> ---- </span></div>
+</body>
+</div>
+
+
+
 <div id="phone">
 <div class="container">
 	<h2>Welcome to Easy Walton Miner! (BETA) </h2>
