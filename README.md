@@ -82,7 +82,7 @@ You can use this to request the information for all transactions in a block.
 
 Usage:
 
-  >> curl http://wtcexplorer.io/api/getTransaction/block/{{blockNum}}
+  >> curl http://wtcexplorer.io/api/getBlockTransactions/{{path:block}}
   
 Sample Output:
 
