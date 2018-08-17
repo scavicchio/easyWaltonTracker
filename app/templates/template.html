@@ -17,7 +17,7 @@
 
 <style type="text/css">
 
-
+{{ analytics }}
 a {
   color: #2A5DB0;
 }
@@ -150,14 +150,16 @@ margin-bottom: 20px;
   color: white;
 }
 
+.navbar-brand img {height: 30px;}
+
 .navbar-brand {
-  color: white;
+  color
 }
 
 
-</style>
 
-<nav class="navbar navbar-expand-md navbar-dark fixed-top">
+</style>
+<nav class="navbar navbar-expand-md navbar-dark static-top">
     <div class="container">
         <a class="navbar-brand" href="/">EasyWaltonMiner</a>
         
@@ -195,8 +197,7 @@ margin-bottom: 20px;
     </div>
 </nav>
 
-
- {% block content %}{% endblock %}
+{% block content %} {% endblock %}
 
 
 <!-- FOOTER -->
