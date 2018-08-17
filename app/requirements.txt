@@ -11,3 +11,4 @@ Flask-RESTful==0.3.6
 Flask-Cors==3.0.6
 requests==2.19.1
 requests-toolbelt==0.8.0
+Flask-Markdown==0.3

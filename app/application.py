@@ -24,10 +24,12 @@ from flask_limiter.util import get_remote_address
 from flask_cors import CORS
 from api_legacy import api_legacy
 import databaseFuctions as db
+from flaskext.markdown import Markdown
 
 #Initialize the app from Flask
 app = Flask(__name__)
 CORS(app)
+Markdown(app)
 app.jinja_env.globals['momentjs'] = momentjs
 limiter = Limiter(
     app,
@@ -487,6 +489,27 @@ def countdown():
   conn.close()
   return render_template('countdown.html',latestBlock=latestBlock,lastUpdate=lastUpdate)
 
+def getAPIcontent():
+  # Open a file: file
+  file = open('templates/api_readme.md',mode='r')
+   
+  # read all lines at once
+  all_of_it = file.read()
+   
+  # close the file
+  file.close()
+
+  return all_of_it
+
+@app.route("/API")
+@app.route("/api")
+def api(): 
+  conn = db.connect()
+  latestBlock = db.getLatestBlockFromDB(conn)
+  lastUpdate = db.getLastUpdateTime(conn)
+  conn.close()
+  content = getAPIcontent()
+  return render_template('api.html',latestBlock=latestBlock,lastUpdate=lastUpdate, content=content)
 
 if __name__ == "__main__":
         app.run('127.0.0.1', 5000, debug = True)
