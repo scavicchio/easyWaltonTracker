@@ -1,6 +1,5 @@
 # API 
-We have started working on a free API for developers to grab waltonchain blockchain data. The documentation is below.
-NOTE THAT ALL SITE REQUESTS ARE LIMITED TO 3000 PER HOUR. Please contact us if you are having issues. 
+Below is the documentation for a free API for developers to grab Waltonchain blockchain data. Please note that all requests are limited to 300 per hour. Please contact us if you are having issues or would like to get an extended access key. 
 ## Single Block
 You can use this to request the information for a block by block number.
 

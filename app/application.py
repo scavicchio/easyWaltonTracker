@@ -511,5 +511,25 @@ def api():
   content = getAPIcontent()
   return render_template('api.html',latestBlock=latestBlock,lastUpdate=lastUpdate, content=content)
 
+@app.route("/block/<int:blockNum>")
+def block(blockNum):
+  conn = db.connect()
+  latestBlock = db.getLatestBlockFromDB(conn)
+  lastUpdate = db.getLastUpdateTime(conn)
+  block = db.getBlock(conn,blockNum) 
+  transactions = db.getTransactionListBlock(conn,blockNum)
+  conn.close()
+  return render_template('block.html',latestBlock=latestBlock,lastUpdate=lastUpdate,block=block,transactions=transactions)
+
+@app.route("/transaction/<path:hashT>")
+def transaction(hashT):
+  conn = db.connect()
+  latestBlock = db.getLatestBlockFromDB(conn)
+  lastUpdate = db.getLastUpdateTime(conn)
+  transaction = db.getTransactionAPI(conn,hashT)
+  conn.close()
+  return render_template('transaction.html',hash=hashT,latestBlock=latestBlock,lastUpdate=lastUpdate,transaction=transaction)
+
+
 if __name__ == "__main__":
         app.run('127.0.0.1', 5000, debug = True)

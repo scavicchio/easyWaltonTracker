@@ -1,0 +1,80 @@
+{% extends "template.html" %}
+{% set active_page = "block" %}
+{% block content %}
+    
+    <style type="text/css">
+      table { 
+
+        font-color: darkgrey;
+        table-layout:fixed;
+       }
+
+       td { 
+    overflow: hidden; 
+    text-overflow: ellipsis; 
+    word-wrap: break-word;
+}
+     h3 {
+
+     }
+
+    </style>   
+
+    <style type="text/css">
+  
+@media 
+only screen and (max-width: 760px),
+(min-device-width: 768px) and (max-device-width: 1024px)  {
+
+  /* Force table to not be like tables anymore */
+  table, thead, tbody, th, td, tr { 
+    display: block; 
+  }
+
+
+
+</style>
+
+<div class="container">
+
+<h3> Block# {{block.blockNum}} </h3>
+
+<table class="table-responsive-sm table-striped" >
+    <tbody>
+      {% for key, value in block.items() %}
+        <tr>
+          <th> {{key}} </th>
+          <td> {{value}} </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+</table>
+
+ </div>
+</br>
+ <div class="container">
+
+<h3> Transactions: </h3>
+
+{% if transactions %}
+
+<table class="table-responsive-sm table-striped" >
+    <tbody>
+      {% for item in transactions %}
+        <tr>
+          <td> <a href = /transaction/{{item.hash}}>{{item.hash}}</a> </td>
+          
+        </tr>
+      {% endfor %}
+    </tbody>
+</table>
+
+{% else %} 
+
+<p> Null </p>
+
+{% endif %}
+
+</div>
+
+{% endblock %}

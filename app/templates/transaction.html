@@ -1,0 +1,55 @@
+{% extends "template.html" %}
+{% set active_page = "transaction" %}
+{% block content %}
+    
+    <style type="text/css">
+      table { 
+
+        font-color: darkgrey;
+        table-layout:fixed;
+       }
+
+       td { 
+    overflow: hidden; 
+    text-overflow: ellipsis; 
+    word-wrap: break-word;
+}
+     h3 {
+
+     }
+
+    </style>   
+
+    <style type="text/css">
+  
+@media 
+only screen and (max-width: 760px),
+(min-device-width: 768px) and (max-device-width: 1024px)  {
+
+  /* Force table to not be like tables anymore */
+  table, thead, tbody, th, td, tr { 
+    display: block; 
+  }
+
+
+
+</style>
+
+<div class="container">
+
+<h3> Transaction, <a href="/block/{{transaction.blockNum}}">Parent Block </a></h3>
+
+<table class="table-responsive-sm table-striped" >
+    <tbody>
+      {% for key, value in transaction.items() %}
+        <tr>
+          <th> {{key}} </th>
+          <td> {{value}} </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+</table>
+
+ </div>
+
+ {% endblock %}

@@ -413,6 +413,14 @@ def getTransactionFrequencyGraph(conn):
   cursor.close()
   return data
 
+def getTransactionListBlock(conn,block):
+  cursor = conn.cursor()
+  query = 'SELECT hash FROM transaction WHERE blockNum = %s'
+  cursor.execute(query, (block))
+  data = cursor.fetchall()
+  cursor.close()
+  return data
+
 ### API ###
 ### API ###
 ### API ###
