@@ -178,12 +178,6 @@ def getLatestNBlocksOffset(conn,perPage,page):
 
 #adds a persons email to the alert table
 def addEmailAlert(conn,etherbase,email,extra):
-        #check for bad inputs
-        if not goodEmail(email):
-          return "Please Enter a Valid Email Address"
-        if not goodEtherbase(etherbase):
-          return "Please Enter a Valid Wallet Address"
-
         cursor = conn.cursor()
         query = 'INSERT INTO `emailList`(`miner`, `email`, `extra_data`, `confirmed`) VALUES (%s,%s,%s,False)'
         try:
@@ -195,17 +189,12 @@ def addEmailAlert(conn,etherbase,email,extra):
         return "Sucsess"
 
 def removeEmailAlert(conn,etherbase,email,extra):
-        #check for bad inputs
-        if not goodEmail(email):
-          return "Please Enter a Valid Email Address"
-        if not goodEtherbase(etherbase):
-          return "Please Enter a Valid Wallet Address"
-
         cursor = conn.cursor()
         query = 'DELETE FROM emailList WHERE (miner = %s AND email = %s AND extra_data = %s)'
         try:
                 cursor.execute(query, (etherbase, email,extra))
         except pymysql.Error as e:
+                cursor.close()
                 return e
         conn.commit()
         cursor.close()
@@ -484,3 +473,42 @@ def getLatestBlockFromDB(conn):
     latestBlock = cursor.fetchone()
     cursor.close()
     return latestBlock["blockNum"];
+
+## EMAIL SERVICE ##
+
+def getEmailsForAlert(conn,blockNum):
+    cursor = conn.cursor()
+    return data
+
+def setEmailConfirmation(conn,email,confirm):
+  cursor = conn.cursor()
+  query = 'UPDATE emailList SET confirmed = %s WHERE email = %s'
+  cursor.execute(query,(confirm,ID))
+  conn.commit()
+  cursor.close()
+  return "Sucsess"
+
+def isMasternode(conn,etherbase):
+  cursor = conn.cursor()
+  query = 'SELECT COUNT(*) FROM transaction WHERE value = 5000 AND reciever = %s'
+  cursor.execute(query,(etherbase))
+  data = cursor.fetchone()['COUNT(*)']
+  #print("IS MASTERNODE")
+  #print(data)
+  cursor.close()
+  if data >= 1:
+    return True
+  return False
+
+def isGuardian(conn,etherbase):
+  cursor = conn.cursor()
+  query = 'SELECT COUNT(*) FROM GMN_ERC WHERE etherbase IN (SELECT wtctGMN.from FROM wtctGMN WHERE  value =  %s)'
+  cursor.execute(query,(etherbase))
+  data = cursor.fetchone()['COUNT(*)']
+  #print("IS GUARDIAN")
+  #print(data)
+  cursor.close()
+  if data >= 1:
+    return True
+  return False
+  

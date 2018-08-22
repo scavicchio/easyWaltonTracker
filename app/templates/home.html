@@ -68,6 +68,8 @@ div.centered table
 
 </style>
 
+{% if showCountdown %}
+
 <script type="text/javascript">
 	var swap = 200000;
 	var latest = {{latestBlock}};
@@ -114,7 +116,7 @@ window.onload = function () {
 </body>
 </div>
 
-
+{% endif %}
 
 <div id="phone">
 <div class="container">
@@ -216,7 +218,7 @@ crypt_single_base_currency = "WTC (WTC)";crypt_single_target_currency = "US Doll
 		<tbody>
 					{% for line in lastTen %}
 						<tr>
-								<td><a href="http://waltonchain.net/#/blockNumber?blockNumber={{line.blockNum}}">{{line.blockNum}}</a></td>
+								<td><a href="/block/{{line.blockNum}}">{{line.blockNum}}</a></td>
 								<td><a href="/miner/{{line.miner}}">{{line.miner | truncate(7, True) }}</a></td>
 								
 								<td><a href="/extra/{{line.extra_data}}">{{line.extra_data | truncate(13, True) }}</a></td>
@@ -260,7 +262,7 @@ crypt_single_base_currency = "WTC (WTC)";crypt_single_target_currency = "US Doll
 		<tbody>
 					{% for line in lastTen %}
 						<tr>
-								<td><a href="http://waltonchain.net/#/blockNumber?blockNumber={{line.blockNum}}">{{line.blockNum}}</a></td>
+								<td><a href="/block/{{line.blockNum}}">{{line.blockNum}}</a></td>
 								<td><a href="/miner/{{line.miner}}">{{line.miner }}</a></td>
 								<td><a href="/extra/{{line.extra_data}}">{{line.extra_data}}</a></td>
 								

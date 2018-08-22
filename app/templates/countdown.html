@@ -51,14 +51,14 @@ h1{
 
 </style>
 
+{% if showCountdown %}
+
 <h1>Countdown to WTCT Token Swap</h1>
 
 
+
 <div id="clockdiv">
-  <div>
-    <span class="days"></span>
-    <div class="smalltext">Days</div>
-  </div>
+ 
   <div>
     <span class="hours"></span>
     <div class="smalltext">Hours</div>
@@ -73,6 +73,14 @@ h1{
   </div>
 </div>
 
+</div>
+
+{% endif %}
+
+<div class="container">
+  </br>
+<p> For phase 1 of the WTCT token swap Waltonchain will be sending erc20 WTC tokens to waltonchain miners wallets who have mined over 50 WTCT. To check your estimated balance, enter your WTCT address below. </p>
+
 <script type="text/javascript">
 	
 var swap = 200000;	
@@ -85,10 +93,8 @@ function getTimeRemaining(endtime) {
   var seconds = Math.floor((t / 1000) % 60);
   var minutes = Math.floor((t / 1000 / 60) % 60);
   var hours = Math.floor((t / (1000 * 60 * 60)) % 24);
-  var days = Math.floor(t / (1000 * 60 * 60 * 24));
   return {
     'total': t,
-    'days': days,
     'hours': hours,
     'minutes': minutes,
     'seconds': seconds
@@ -97,7 +103,6 @@ function getTimeRemaining(endtime) {
 
 function initializeClock(id, endtime) {
   var clock = document.getElementById(id);
-  var daysSpan = clock.querySelector('.days');
   var hoursSpan = clock.querySelector('.hours');
   var minutesSpan = clock.querySelector('.minutes');
   var secondsSpan = clock.querySelector('.seconds');
@@ -105,7 +110,6 @@ function initializeClock(id, endtime) {
   function updateClock() {
     var t = getTimeRemaining(endtime);
 
-    daysSpan.innerHTML = t.days;
     hoursSpan.innerHTML = ('0' + t.hours).slice(-2);
     minutesSpan.innerHTML = ('0' + t.minutes).slice(-2);
     secondsSpan.innerHTML = ('0' + t.seconds).slice(-2);
@@ -129,7 +133,206 @@ initializeClock('clockdiv', deadline);
 
 </script>
 
+<style type="text/css">
+  
 
+div.container2 {
+  text-align: left;
+  font-family: sans-serif;
+  font-weight: 100;
+}
+
+table, td {
+   width: 100%;
+}
+
+.spinner {
+  margin: 100px auto;
+  width: 50px;
+  height: 40px;
+  text-align: center;
+  font-size: 10px;
+  display: none;
+}
+
+.spinner > div {
+  background-color: #333;
+  height: 100%;
+  width: 6px;
+  display: inline-block;
+  
+  -webkit-animation: sk-stretchdelay 1.2s infinite ease-in-out;
+  animation: sk-stretchdelay 1.2s infinite ease-in-out;
+}
+
+.spinner .rect2 {
+  -webkit-animation-delay: -1.1s;
+  animation-delay: -1.1s;
+}
+
+.spinner .rect3 {
+  -webkit-animation-delay: -1.0s;
+  animation-delay: -1.0s;
+}
+
+.spinner .rect4 {
+  -webkit-animation-delay: -0.9s;
+  animation-delay: -0.9s;
+}
+
+.spinner .rect5 {
+  -webkit-animation-delay: -0.8s;
+  animation-delay: -0.8s;
+}
+
+@-webkit-keyframes sk-stretchdelay {
+  0%, 40%, 100% { -webkit-transform: scaleY(0.4) }  
+  20% { -webkit-transform: scaleY(1.0) }
+}
+
+@keyframes sk-stretchdelay {
+  0%, 40%, 100% { 
+    transform: scaleY(0.4);
+    -webkit-transform: scaleY(0.4);
+  }  20% { 
+    transform: scaleY(1.0);
+    -webkit-transform: scaleY(1.0);
+  }
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+</style>
+
+<div class="input-group mb-3">
+  
+  <input type="text" name="wallet" id="wallet" class="form-control" placeholder="Enter wallet address..." aria-label="etherbase" aria-describedby="basic-addon1">
+  <div class="input-group-prepend">
+    <span class="input-group-btn">
+        <input onclick="myFunction()" id='myInput', class="btn btn-primary active" type="submit" role="intput" aria-pressed="true"></a>
+      </span>
+  </div>
+</div>
+</div>
+
+<div id="spinner2", class="spinner">
+  <div class="rect1"></div>
+  <div class="rect2"></div>
+  <div class="rect3"></div>
+  <div class="rect4"></div>
+  <div class="rect5"></div>
+</div>
+
+<div class="container">
+<div id="resultsSearch" class = "container2">
+
+  <table class="table-responsive-sm" >
+    <tbody >
+        <tr>
+          <td style="width: 20%"> Etherbase: </td>
+          <td style="white-space: nowrap; text-overflow:ellipsis; overflow: hidden; max-width:1px;" align="right" id="ethfill"> </td>
+        </tr>
+        <tr>
+          <td style="width: 20%"> Blocks: </td>
+          <td style="white-space: nowrap; text-overflow:ellipsis; overflow: hidden; max-width:1px;" align="right" id="blockfill"> </td>
+        </tr>
+        <tr>
+          <td style="width: 20%"> Status: </td>
+          <td style="white-space: nowrap; text-overflow:ellipsis; overflow: hidden; max-width:1px;" align="right" id="statusfill"> </td>
+        </tr>
+        <tr>
+          <td style="width: 50%"> Estimated Payout (WTC): </td>
+          <td style="white-space: nowrap; text-overflow:ellipsis; overflow: hidden; max-width:1px;" align="right"  id="payoutfill"> </td>
+        </tr>
+    </tbody>
+</table>
+
+</div>
+</div>
+
+<style>
+.hidden{
+    display:none;
+}
+
+.unhidden{
+    display:block;
+}
+
+div.container2 {
+  display: none
+}
+
+</style>
+
+<script>
+const URL = 'http://wtcexplorer.io/service/tokenswap_balance/'
+
+function dummy() {
+  console.log(dummy)
+}
+function myFunction() {
+    document.getElementById("spinner2").style.display = "block";
+    setTimeout(dummy(),2000)
+    document.getElementById("resultsSearch").style.display = "none";
+
+
+    // Declare variables
+    input = document.getElementById('wallet').value;
+    
+    fetch(URL+input)
+      .then(function(response) {
+       return response.json();
+      })
+      .then(function(myJson) {
+        data = JSON.stringify(myJson);
+
+        var array = data.split(',');
+
+        document.getElementById('ethfill').innerHTML = input;
+        document.getElementById('blockfill').innerHTML = array[0].substr(1, array[0].length);
+        document.getElementById('statusfill').innerHTML = array[1].substr(1, array[1].length-2);
+        document.getElementById('payoutfill').innerHTML = array[2].substr(0, array[2].length-1);
+
+     })
+  document.getElementById("spinner2").style.display = "none";
+
+  document.getElementById("resultsSearch").style.display = "block";
+}
+function displayData() {
+  fetch(URL+input)
+      .then(function(response) {
+       return response.json();
+      })
+      .then(function(myJson) {
+        data = JSON.stringify(myJson);
+
+        var array = data.split(',');
+
+        document.getElementById('ethfill').innerHTML = input;
+        document.getElementById('blockfill').innerHTML = array[0].substr(1, array[0].length);
+        document.getElementById('statusfill').innerHTML = array[1].substr(1, array[1].length-2);
+        document.getElementById('payoutfill').innerHTML = array[2].substr(0, array[2].length-1);
+
+     });
+  document.getElementsByClass("spinner").style.display = "none";
+  document.getElementById("resultsSearch").style.display = "block";
+
+}
+
+wallet.addEventListener("keydown", function (e) {
+    if (e.keyCode === 13) {  //checks whether the pressed key is "Enter"
+        
+        myFunction()
+
+    }
+});
+
+
+</script>
 
 {% endblock %}
 

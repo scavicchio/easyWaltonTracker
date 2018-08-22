@@ -51,7 +51,7 @@
 	<tbody>
 		{% for line2 in data %}
 		<tr>
-			<td><a href="http://waltonchain.net/#/blockNumber?blockNumber={{line2.blockNum}}">{{line2.blockNum}}</a></td>
+			<td><a href="/block/{{line2.blockNum}}">{{line2.blockNum}}</a></td>
 			<td><a href="/miner/{{line2.miner}}">{{line2.miner}}</a></td>
 			{#
 			<td>
@@ -209,7 +209,7 @@
 	<tbody>
 		{% for line2 in data %}
 		<tr>
-			<td><a href="http://waltonchain.net/#/blockNumber?blockNumber={{line2.blockNum}}">{{line2.blockNum}}</a></td>
+			<td><a href="/block/{{line2.blockNum}}">{{line2.blockNum}}</a></td>
 			<td><a href="/miner/{{line2.miner}}">{{line2.miner | truncate(15, True) }}</a></td>
 			{#
 			<td>

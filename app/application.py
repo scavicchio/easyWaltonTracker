@@ -15,7 +15,6 @@ from flask_paginate import Pagination, get_page_args
 from flask_bootstrap import Bootstrap
 import pymysql.cursors
 import re
-import smtplib
 from momentjs import momentjs
 import csv
 import math
@@ -23,6 +22,7 @@ from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from flask_cors import CORS
 from api_legacy import api_legacy
+from emailService import emailService
 import databaseFuctions as db
 from flaskext.markdown import Markdown
 
@@ -38,6 +38,7 @@ limiter = Limiter(
 )
 
 app.register_blueprint(api_legacy)
+app.register_blueprint(emailService)
 
 # Lets make some global vars
 with open("clientinfo.txt", "r") as ins:
@@ -85,38 +86,7 @@ def goodEtherbase(etherbase):
 
   return False
 
-def sendUnsubstribeConfirmation(etherbase,email):
-  fromaddr = username
-  toaddrs  = email
-  msg = 'You have sucesssfully unsubscribed from the EasyWaltonMiner email alert system. \n \n' \
-  'We are sorry to see you go! You will no longer recieve email alerts for your wallet: ' + etherbase + '.\n \n' + \
-  'If you had an issue with this service, please respond to this email and let us know so that we can address it.'
-  server = smtplib.SMTP('smtp.gmail.com:587')
-  server.starttls()
-  server.login(username,password)
-  server.sendmail(fromaddr, toaddrs, msg)
-  server.quit()
 
-  return
-
-def sendSignupConfirmation(etherbase,email,extra):
-  fromaddr = username
-  toaddrs  = email
-  msg = 'You have sucesssfully subscribed to the EasyWaltonMiner email alert system. \n \n' \
-  'You will now recieve email alerts for blocks mined to wallet: ' + etherbase + '.\n \n'
-  if (extra):
-    msg = msg + 'You will recieve alerts only when the extra_data flag of a block matches: ' + extra + '\n \n'
-  else:
-    msg = msg + 'You will recieve a message for every new block mined to your wallet. \n \n'
-
-  msg = msg + 'If you have any problems with this service, please notify us at this email address. Thanks you!'
-
-  server = smtplib.SMTP('smtp.gmail.com:587')
-  server.starttls()
-  server.login(username,password)
-  server.sendmail(fromaddr, toaddrs, msg)
-  server.quit()
-  return
 
 ########## ######################## ##############   
 ########## ######################## ##############   
@@ -139,6 +109,7 @@ def homepage(error="None"):
     graph = db.getDifficultyGraphData(conn)
     conn.close()
 
+
     for x in graph:
       x['difficulty'] = float("{0:.2f}".format(x['difficulty']/difficultyHashMagnitude))
     #pagination = Pagination(page=page, per_page=per_page, total = int(latestBlock),
@@ -146,6 +117,10 @@ def homepage(error="None"):
 
     if (error != "None"):
       return render_template('home.html',graph=graph,latestBlock=latestBlock,lastTen=lastTen,lastUpdate=lastUpdate,error=error)
+
+    if (latestBlock < 200000):
+      showCountdown = 1
+      return render_template('home.html',graph=graph,latestBlock=latestBlock,lastTen=lastTen,lastUpdate=lastUpdate,showCountdown=showCountdown)
 
     return render_template('home.html',graph=graph,latestBlock=latestBlock,lastUpdate=lastUpdate,lastTen=lastTen)
 
@@ -213,51 +188,6 @@ def alert():
         conn.close()
         return render_template('alerts.html',latestBlock=latestBlock)
 
-@app.route('/emailSubmit',methods=['GET','POST'])
-def emailSubmit():
-        conn = db.connect()
-        etherbase = request.form.get('etherbase')
-        email = request.form.get('email')
-        extra = request.form.get('extra')
-        message = db.addEmailAlert(conn,etherbase,email,extra)
-        latestBlock = db.getLatestBlockFromDB(conn)
-        conn.close()
-
-        if message == "Sucsess":
-                message = "Sucsess! Please check your email to confirm your signup."
-
-                
-                try:
-                  sendSignupConfirmation(etherbase,email,extra)
-                except error as e:
-                  return render_template('alerts.html',latestBlock=latestBlock,error=e)
-                return render_template('alerts.html',latestBlock=latestBlock,message=message)
-        else:
-                return render_template('alerts.html',latestBlock=latestBlock,error=message)
-        
-        return render_template('alerts.html',latestBlock=latestBlock)
-
-@app.route('/emailRemove',methods=['GET','POST'])
-def emailRemove():
-        conn = db.connect()
-        etherbase = request.form.get('etherbaseRemove')
-        email = request.form.get('emailRemove')
-        extra = request.form.get('extraRemove')
-        message = db.removeEmailAlert(conn,etherbase,email,extra)
-        latestBlock = db.getLatestBlockFromDB(conn)
-        conn.close()
-
-        if message == "Sucsess":
-                try:
-                  sendUnsubstribeConfirmation(etherbase,email)
-                except error as e:
-                  return render_template('alerts.html',latestBlock=latestBlock,error=e)
-                message = "Sucsess! Please check your email for removal confirmation."
-                return render_template('alerts.html',latestBlock=latestBlock,message=message)
-        else:
-                return render_template('alerts.html',latestBlock=latestBlock,error=message)
-        
-        return render_template('alerts.html',latestBlock=latestBlock)
 '''
 # route for miner data page
 @app.route('/miner/<etherbase>',methods=['GET'])
@@ -487,6 +417,9 @@ def countdown():
   latestBlock = db.getLatestBlockFromDB(conn)
   lastUpdate = db.getLastUpdateTime(conn)
   conn.close()
+  if (latestBlock < 200000):
+      showCountdown = 1
+      return render_template('countdown.html',showCountdown=showCountdown,latestBlock=latestBlock,lastUpdate=lastUpdate)
   return render_template('countdown.html',latestBlock=latestBlock,lastUpdate=lastUpdate)
 
 def getAPIcontent():
@@ -529,7 +462,6 @@ def transaction(hashT):
   transaction = db.getTransactionAPI(conn,hashT)
   conn.close()
   return render_template('transaction.html',hash=hashT,latestBlock=latestBlock,lastUpdate=lastUpdate,transaction=transaction)
-
 
 if __name__ == "__main__":
         app.run('127.0.0.1', 5000, debug = True)
