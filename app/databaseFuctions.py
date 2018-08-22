@@ -511,4 +511,13 @@ def isGuardian(conn,etherbase):
   if data >= 1:
     return True
   return False
+
+# gets the total blocks a miner has solved
+def getPhase1Rewards(conn,etherbase):
+    cursor = conn.cursor()
+    query = 'SELECT COUNT(*) FROM blockchain WHERE miner = %s AND blockNum <= 200000'
+    cursor.execute(query, (etherbase))
+    data = cursor.fetchone()
+    cursor.close()
+    return data["COUNT(*)"]
   

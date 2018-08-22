@@ -121,7 +121,7 @@ def tokenswapBalance(etherbase):
         action=etherbase
         )
   conn = db.connect()
-  blocksMined = db.getRewardCount(conn,etherbase)
+  blocksMined = db.getPhase1Rewards(conn,etherbase)
   
   if db.isMasternode(conn,etherbase) == True:
     status = "Masternode"
