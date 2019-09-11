@@ -28,6 +28,7 @@ from flaskext.markdown import Markdown
 
 #Initialize the app from Flask
 app = Flask(__name__)
+is_maintenance_mode = True
 CORS(app)
 Markdown(app)
 app.jinja_env.globals['momentjs'] = momentjs
@@ -95,6 +96,17 @@ def goodEtherbase(etherbase):
 ########## ######################## ##############   
 ########## ######################## ##############   
 ########## ######################## ##############   
+
+@app.before_request
+def check_for_maintenance():
+    if is_maintenance_mode and request.path != url_for('maintenance'): 
+        return redirect(url_for('maintenance'))
+        # Or alternatively, dont redirect 
+        # return 'Sorry, off for maintenance!', 503
+
+@app.route('/maintenance')
+def maintenance():
+    return 'Sorry, off for maintenance!', 503
 
 #Define route for homepage
 @app.route('/')
@@ -464,4 +476,5 @@ def transaction(hashT):
   return render_template('transaction.html',hash=hashT,latestBlock=latestBlock,lastUpdate=lastUpdate,transaction=transaction)
 
 if __name__ == "__main__":
-        app.run('127.0.0.1', 5000, debug = True)
+        app.run()
+
