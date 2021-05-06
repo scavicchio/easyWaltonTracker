@@ -8,7 +8,7 @@ tzlocal==1.5.1
 flask-paginate==0.5.1
 Flask-Limiter==1.0.1
 Flask-RESTful==0.3.6
-Flask-Cors==3.0.6
+Flask-Cors==3.0.9
 requests>=2.20.0
 requests-toolbelt==0.8.0
 Flask-Markdown==0.3
